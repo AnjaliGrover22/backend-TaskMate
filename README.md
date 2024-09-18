@@ -79,3 +79,17 @@ Inside Schemas Folder
 - Feedback.js
 - FAQ.js
 - Payment.js
+
+Inside controllers Folder
+
+- customers Folder
+  - customerController.js
+- professionals Folder
+  - professionalsController.js
+- bookingController.js
+
+Inside routes Folder
+
+- customerRoute.js
+- professionalRoute.js
+- bookingRoute.js

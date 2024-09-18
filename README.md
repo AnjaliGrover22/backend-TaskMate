@@ -64,3 +64,18 @@
 - create `.gitignore ` file
 - create `server.js` File
 - create `dbinit.js ` file inside `db` folder
+
+### Create a Schemas for
+
+Create schemas reequired for TASKMATE services. \
+Inside Schemas Folder
+
+- Customer.js
+- Professional.js
+- Service.js
+- ServiceCategory.js
+- Booking, BookingForOther.js
+- Favourite.js
+- Feedback.js
+- FAQ.js
+- Payment.js

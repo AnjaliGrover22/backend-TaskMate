@@ -5,6 +5,7 @@ require("dotenv").config();
 require("colors");
 const connectDB = require("./db/dbinit");
 const imageRoute = require("./routes/imageRoute");
+const feedbackRoutes = require("./routes/feedbackRoute");
 connectDB();
 
 const port = process.env.PORT || 8080;
@@ -19,6 +20,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api", imageRoute);
+app.use("/api", feedbackRoutes);
 
 app.listen(port, () =>
   console.log(`Server running on http://localhost:${port}`.bgGreen.black)

@@ -16,7 +16,7 @@ const storage = new CloudinaryStorage({
   params: {
     folder: "app", // name for the folder in the cloud
     allowedFormats: ["jpg", "png", "jpeg"],
-    transformation: [{ width: 500, height: 500, crop: "limit" }],
+    // transformation: [{ width: 500, height: 500, crop: "limit" }],
   },
 });
 const upload = multer({ storage: storage });

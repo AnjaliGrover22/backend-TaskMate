@@ -7,43 +7,107 @@ const customerSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
+    validate: [validator.isEmail, "Invalid email format"],
   },
   password: {
     type: String,
     required: true,
+    validate: [
+      (value) => validator.isStrongPassword(value),
+      "Make sure to use at least 8 characters, one upper case letter, a number and a symbol",
+    ],
+  },
+  profileImage: {
+    type: String, // URL or path to the profile image
+  },
+  firstName: {
+    type: String,
+    required: true,
+  },
+  lastName: {
+    type: String,
+    required: true,
+  },
+  gender: {
+    type: String,
+    enum: ["male", "female", "other"],
+    required: true,
+  },
+  phoneNumber: {
+    type: String,
+    required: true,
+    validate: [
+      (value) => validator.isMobilePhone(value),
+      "Invalid phone number",
+    ],
+  },
+  address: {
+    street: {
+      type: String,
+      required: true,
+    },
+    zipCode: {
+      type: String,
+      required: true,
+    },
+    state: {
+      type: String,
+      required: true,
+    },
+  },
+  aboutMe: {
+    type: String,
   },
 });
 
-// creating a custom static method
+// custom static method for signup
 
-customerSchema.statics.signup = async function (email, password) {
-  //validation
-
+customerSchema.statics.signup = async function (
+  profileImage,
+  firstName,
+  lastName,
+  gender,
+  email,
+  password,
+  phoneNumber,
+  address,
+  aboutMe
+) {
+  // Validation
   const exists = await this.findOne({ email });
 
   if (exists) {
     throw Error("Email already in use");
   }
 
-  if (!email || !password) {
-    throw Error("All fields must be filled");
+  if (!email || !password || !firstName || !lastName || !gender) {
+    throw Error("All required fields must be filled");
   }
 
   if (!validator.isEmail(email)) {
-    throw Error("email is not valid");
+    throw Error("Email is not valid");
   }
 
   if (!validator.isStrongPassword(password)) {
     throw Error(
-      "Make sure to use at least 8 characters, one upper case letter, a number and a symbol"
+      "Password must be at least 8 characters long, include one uppercase letter, one number, and one symbol"
     );
   }
 
   const salt = await bcrypt.genSalt(10);
-
   const hash = await bcrypt.hash(password, salt);
 
-  const customer = await this.create({ email, password: hash });
+  const customer = await this.create({
+    profileImage,
+    firstName,
+    lastName,
+    gender,
+    email,
+    password: hash,
+    phoneNumber,
+    address,
+    aboutMe,
+  });
 
   return customer;
 };
@@ -58,7 +122,7 @@ customerSchema.statics.login = async function (email, password) {
   const customer = await this.findOne({ email });
 
   if (!customer) {
-    throw Error("customer doesn't exist or incorrect email");
+    throw Error("Customer doesn't exist or incorrect email");
   }
 
   const match = await bcrypt.compare(password, customer.password);

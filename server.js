@@ -16,8 +16,8 @@ const port = process.env.PORT || 8080;
 
 // Middlewares
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json()); // For parsing application/json
+app.use(express.urlencoded({ extended: false })); // Try setting this to false
 
 app.get("/", (req, res) => {
   res.send("welcome to TaskMate DB ");

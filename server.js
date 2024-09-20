@@ -4,7 +4,6 @@ const cors = require("cors");
 require("dotenv").config();
 require("colors");
 const connectDB = require("./db/dbinit");
-const imageRoute = require("./routes/imageRoute");
 const categoryRoute = require("./routes/categoryRoute");
 connectDB();
 
@@ -19,7 +18,6 @@ app.get("/", (req, res) => {
   res.send("welcome to TaskMate DB ");
 });
 
-app.use("/api", imageRoute);
 app.use("/categories", categoryRoute);
 
 app.listen(port, () =>

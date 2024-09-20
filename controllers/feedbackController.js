@@ -27,6 +27,22 @@ exports.getFeedbackById = async (req, res) => {
   }
 };
 
+// Get all feedbacks
+exports.getAllFeedbacks = async (req, res) => {
+  try {
+    const feedbacks = await Feedback.find().populate("categoryId");
+    if (!feedbacks.length) {
+      return res
+        .status(200)
+        .json({ message: "No feedbacks found in the database" });
+    } else {
+      return res.status(200).json(feedbacks);
+    }
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+
 // Update feedback by ID
 exports.updateFeedback = async (req, res) => {
   try {

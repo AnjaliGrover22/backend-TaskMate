@@ -9,10 +9,6 @@ const customerRoutes = require("./routes/customerRoute");
 const professionalRoutes = require("./routes/professionalRoute"); // import Professional routes
 const dashboardRoutes = require("./routes/dashboardRoute"); // New dashboard route
 const serviceRoutes = require('./routes/serviceRoute');// Import the service routes
-
-const serviceRoutes = require('./routes/serviceRoute');// Import the service routes
-
-
 const imageRoute = require("./routes/imageRoute");
 const categoryRoute = require("./routes/categoryRoute");
 connectDB();
@@ -33,6 +29,8 @@ app.use("/customer", customerRoutes);
 app.use("/professional", professionalRoutes); // add Professional routes
 app.use("/mydashboard", dashboardRoutes);
 app.use("/api", imageRoute);
+app.use("/api/services", serviceRoutes);
+app.use("/api/category", categoryRoute);
 
 app.listen(port, () =>
   console.log(`Server running on http://localhost:${port}`.bgGreen.black)

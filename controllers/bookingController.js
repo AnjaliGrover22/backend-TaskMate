@@ -1,4 +1,5 @@
 const Booking = require("../schemas/Booking");
+const Customer = require("../schemas/Customer");
 
 // Create a new booking
 exports.createBooking = async (req, res) => {
@@ -14,7 +15,8 @@ exports.createBooking = async (req, res) => {
 // Get a booking by ID
 exports.getBookingById = async (req, res) => {
   try {
-    const booking = await Booking.findById(req.params.id)
+    const { id } = req.params;
+    const booking = await Booking.findById(id)
       .populate("cust_id")
       .populate("prof_id")
       .populate("service_id");

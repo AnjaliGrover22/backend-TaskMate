@@ -82,10 +82,8 @@ Inside Schemas Folder
 
 Inside controllers Folder
 
-- customers Folder
-  - customerController.js
-- professionals Folder
-  - professionalsController.js
+- customerController.js
+- professionalsController.js
 - bookingController.js
 
 Inside routes Folder

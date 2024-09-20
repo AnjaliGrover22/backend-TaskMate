@@ -13,12 +13,17 @@ const imageRoute = require("./routes/imageRoute");
 const feedbackRoutes = require("./routes/feedbackRoute");
 connectDB();
 
+// routes
+const bookingRoutes = require("./routes/bookingRoute");
+
 const port = process.env.PORT || 8080;
 
 // Middlewares
 app.use(cors());
-app.use(express.json()); // For parsing application/json
-app.use(express.urlencoded({ extended: false })); // Try setting this to false
+
+// Middleware to parse JSON requests
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
   res.send("welcome to TaskMate DB ");
@@ -29,7 +34,8 @@ app.use("/customer", customerRoutes);
 app.use("/professional", professionalRoutes); // add Professional routes
 app.use("/mydashboard", dashboardRoutes);
 app.use("/api", imageRoute);
-app.use("/api", feedbackRoutes);
+// Use the booking routes
+app.use("/", bookingRoutes);
 
 app.listen(port, () =>
   console.log(`Server running on http://localhost:${port}`.bgGreen.black)

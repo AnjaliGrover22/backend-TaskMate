@@ -9,6 +9,7 @@ const customerRoutes = require("./routes/customerRoute");
 const professionalRoutes = require("./routes/professionalRoute"); // import Professional routes
 const dashboardRoutes = require("./routes/dashboardRoute"); // New dashboard route
 
+const imageRoute = require("./routes/imageRoute");
 connectDB();
 
 const port = process.env.PORT || 8080;
@@ -26,6 +27,7 @@ app.get("/", (req, res) => {
 app.use("/customer", customerRoutes);
 app.use("/professional", professionalRoutes); // add Professional routes
 app.use("/mydashboard", dashboardRoutes);
+app.use("/api", imageRoute);
 
 app.listen(port, () =>
   console.log(`Server running on http://localhost:${port}`.bgGreen.black)

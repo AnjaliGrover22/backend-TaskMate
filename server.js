@@ -14,6 +14,7 @@ const imageRoute = require("./routes/imageRoute");
 const categoryRoute = require("./routes/categoryRoute");
 const feedbackRoutes = require("./routes/feedbackRoute");
 const bookingRoutes = require("./routes/bookingRoute");
+const favouriteRoutes = require("./routes/favouriteRoutes");
 connectDB();
 
 const port = process.env.PORT || 8080;
@@ -40,6 +41,8 @@ app.use("/api/category", categoryRoute);
 app.use("/", bookingRoutes);
 //Use the feedback routes
 app.use("/", feedbackRoutes);
+//Use the favourite routes
+app.use("/", favouriteRoutes);
 
 app.listen(port, () =>
   console.log(`Server running on http://localhost:${port}`.bgGreen.black)

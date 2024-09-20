@@ -7,7 +7,7 @@ const connectDB = require("./db/dbinit");
 connectDB();
 
 // routes
-const bookingRoutes = require("./routes/bookingRoutes");
+const bookingRoutes = require("./routes/bookingRoute");
 
 const port = process.env.PORT || 8080;
 

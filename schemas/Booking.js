@@ -3,18 +3,18 @@ const mongoose = require("mongoose");
 const bookingSchema = new mongoose.Schema({
   cust_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
+    ref: "Customer",
+    // required: true,
   },
   prof_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Professional",
-    required: true,
+    //required: true,
   },
   service_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Service",
-    required: true,
+    //required: true,
   },
   appointment_date: {
     type: Date,

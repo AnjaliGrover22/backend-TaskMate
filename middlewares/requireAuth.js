@@ -1,30 +1,42 @@
+// Middlewares/requireAuth.js
 const jwt = require("jsonwebtoken");
 const Customer = require("../schemas/Customer");
+const Professional = require("../schemas/Professional");
 
 const requireAuth = async (req, res, next) => {
-  // verify authentication
+  // Get the token from authorization header
   const { authorization } = req.headers;
 
   if (!authorization) {
-    return res.status(401).json({ error: "Not Authorized" });
+    return res.status(401).json({ error: "Not Authorized, No token" });
   }
 
-  // the auth in the headers is structured as follows: 'Bearer ddsades123ew21.dsaadwe23.d23d32' and we only need the second part, the token itself
+  // Extract the token, assuming 'Bearer <token>'
   const token = authorization.split(" ")[1];
 
-  // Verify the token and make sure it hasn't been tampered with
-
   try {
+    // Verify the token
     const { _id } = jwt.verify(token, process.env.SECRET);
 
-    //attaching the Customer to the request here in the middleware will make it available in whatever comes after the middleware
-    //use the select() method to only attach the id rather than the whole document containing email and pass and so on
-    req.customer = await Customer.findById(_id).select("_id");
+    // Search for the user in the Customer collection
+    const customer = await Customer.findById(_id).select("_id");
+    if (customer) {
+      req.user = { type: "customer", _id: customer._id };
+      return next();
+    }
 
-    next();
+    // If not found in Customer, search in Professional collection
+    const professional = await Professional.findById(_id).select("_id");
+    if (professional) {
+      req.user = { type: "professional", _id: professional._id };
+      return next();
+    }
+
+    // If no user is found
+    return res.status(401).json({ error: "User not found" });
   } catch (error) {
     console.log(error);
-    res.status(401).json({ error: "Not Authorized" });
+    return res.status(401).json({ error: "Not Authorized" });
   }
 };
 

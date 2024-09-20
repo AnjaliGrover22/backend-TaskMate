@@ -1,3 +1,4 @@
+// server.js
 const express = require("express");
 const app = express();
 const cors = require("cors");
@@ -5,6 +6,9 @@ require("dotenv").config();
 require("colors");
 const connectDB = require("./db/dbinit");
 const customerRoutes = require("./routes/customerRoute");
+const professionalRoutes = require("./routes/professionalRoute"); // import Professional routes
+const dashboardRoutes = require("./routes/dashboardRoute"); // New dashboard route
+
 connectDB();
 
 const port = process.env.PORT || 8080;
@@ -18,8 +22,10 @@ app.get("/", (req, res) => {
   res.send("welcome to TaskMate DB ");
 });
 
+// Use Customer and Professional routes
 app.use("/customer", customerRoutes);
-//next goes to dashboard after login
+app.use("/professional", professionalRoutes); // add Professional routes
+app.use("/mydashboard", dashboardRoutes);
 
 app.listen(port, () =>
   console.log(`Server running on http://localhost:${port}`.bgGreen.black)

@@ -19,7 +19,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Use the booking routes
-app.use("/booking", bookingRoutes);
+app.use("/", bookingRoutes);
 
 app.get("/", (req, res) => {
   res.send("welcome to TaskMate DB ");

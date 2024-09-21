@@ -14,7 +14,7 @@ const imageRoute = require("./routes/imageRoute");
 const categoryRoute = require("./routes/categoryRoute");
 const feedbackRoutes = require("./routes/feedbackRoute");
 const bookingRoutes = require("./routes/bookingRoute");
-const favouriteRoutes = require("./routes/favouriteRoutes");
+const favouriteRoutes = require("./routes/favouriteRoute");
 connectDB();
 
 const port = process.env.PORT || 8080;

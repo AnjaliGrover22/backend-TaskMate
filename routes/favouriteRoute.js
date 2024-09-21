@@ -3,17 +3,20 @@ const router = express.Router();
 const favouriteController = require("../controllers/favouriteController");
 
 // Create a new favourite
-router.post("/", favouriteController.createFavourite);
+router.post("/favourite", favouriteController.createFavourite);
 
 // Get all favourites
-router.get("/", favouriteController.getAllFavourites);
+router.get("/favourite", favouriteController.getAllFavourites);
 
 // Get favourites by customer ID
-router.get("/customer/:custId", favouriteController.getFavouritesByCustomer);
+router.get(
+  "/favourite/customer/:cust_id",
+  favouriteController.getFavouritesByCustomer
+);
 
 // Get favourites by professional ID
 router.get(
-  "/professional/:profId",
+  "/professional/:prof_id",
   favouriteController.getFavouritesByProfessional
 );
 

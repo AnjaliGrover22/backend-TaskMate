@@ -1,39 +1,58 @@
 const Booking = require("../schemas/Booking");
-const moment = require("moment"); // // need to install this package: npm install moment
+const moment = require("moment"); //install this package: npm install moment
+const moment = require("moment-timezone"); // //install this package: npm install moment-timezone
 const Customer = require("../schemas/Customer");
 
-function validateTimeFormat(timeStr) {
-  const pattern = /^(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/;
-  return pattern.test(timeStr);
+function validateAndParseDatetime(dateStr, timeStr) {
+  const dateTime = moment.tz(
+    `${dateStr} ${timeStr}`,
+    "DD.MM.YYYY HH:mm",
+    "Europe/Berlin"
+  );
+
+  if (!dateTime.isValid()) {
+    throw new Error(
+      "Invalid date or time format. Please use DD.MM.YYYY for date and HH:mm for time."
+    );
+  }
+
+  if (dateTime.day() === 0 || dateTime.day() === 6) {
+    throw new Error("Appointments are only available on weekdays.");
+  }
+
+  const hour = dateTime.hour();
+  const minute = dateTime.minute();
+  if (hour < 8 || (hour === 18 && minute > 0) || hour > 18) {
+    throw new Error("Appointments are only available between 08:00 and 18:00.");
+  }
+
+  if (dateTime.isBefore(moment())) {
+    throw new Error("Appointment date and time must be in the future.");
+  }
+
+  return dateTime.toDate(); // Convert to JavaScript Date object
 }
+
 // Create a new booking
 exports.createBooking = async (req, res) => {
   try {
-    const bookingData = req.body;
+    const { appointment_date, appoint_time, ...otherBookingData } = req.body;
 
-    // Parse the date string to a valid Date object
-    const parsedDate = moment(
-      bookingData.appointment_date,
-      "DD.MM.YYYY"
-    ).toDate();
-    console.log("parsedDate ", parsedDate);
-    if (!parsedDate || isNaN(parsedDate.getTime())) {
-      return res
-        .status(400)
-        .json({ error: "Invalid date format. Please use DD.MM.YYYY" });
-    }
+    // Validate and parse the date and time
+    const appointmentDatetime = validateAndParseDatetime(
+      appointment_date,
+      appoint_time
+    );
 
-    // Validate appoint_time
-    if (!validateTimeFormat(bookingData.appoint_time)) {
-      return res.status(400).json({
-        error: "Invalid time format. Please use HH:mm (24-hour format)",
-      });
-    }
+    // Create a new booking object with the parsed datetime
+    const newBooking = new Booking({
+      ...otherBookingData,
+      appointment_datetime: appointmentDatetime,
+    });
 
-    bookingData.appointment_date = parsedDate;
-
-    const newBooking = new Booking(bookingData);
+    // Save the booking to the database
     await newBooking.save();
+
     res.status(201).json(newBooking);
   } catch (error) {
     res.status(400).json({ error: error.message });

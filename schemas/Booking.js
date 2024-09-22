@@ -19,30 +19,8 @@ const bookingSchema = new mongoose.Schema({
     ref: "Service",
     required: true,
   },
-  // Date of the appointment in DD.MM.YYYY format
-  appointmentDate: {
-    type: String,
-    required: true,
-    validate: {
-      validator: function (v) {
-        return /^\d{2}\.\d{2}\.\d{4}$/.test(v);
-      },
-      message: (props) =>
-        `${props.value} is not a valid date format. Use DD.MM.YYYY`,
-    },
-  },
-  // Time of the appointment in HH:mm format (24-hour clock)
-  appointmentTime: {
-    type: String,
-    required: true,
-    validate: {
-      validator: function (v) {
-        return /^([01]\d|2[0-3]):([0-5]\d)$/.test(v);
-      },
-      message: (props) =>
-        `${props.value} is not a valid time format. Use HH:mm`,
-    },
-  },
+
+  appointmentDateTime: { type: Date, default: Date.now },
   // Status of the booking (pending, confirmed, or cancelled)
   status: {
     type: String,

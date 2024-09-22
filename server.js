@@ -41,7 +41,7 @@ app.use("/api/category", categoryRoute);
 // Use the booking routes
 app.use("/", bookingRoutes);
 //Use the feedback routes
-app.use("/", feedbackRoutes);
+app.use("/feedback", feedbackRoutes);
 //Use the favourite routes
 app.use("/", favouriteRoutes);
 

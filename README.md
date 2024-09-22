@@ -93,3 +93,23 @@ Inside routes Folder
 - bookingRoute.js
 
 - npm install iso-datestring-validator
+- backend validates date in ISO 8601 UTC format , same format stored in MongoDB.
+- this makes representaion of the date according to user's browser Locale and timezone easier
+
+## ## Date Validation and Storage in ISO 8601 UTC Format
+
+To implement date validation in ISO 8601 UTC format, follow these steps:
+
+1. Install the required package:
+
+2. Implement backend validation:
+
+- The backend validates dates in ISO 8601 UTC format.
+- The same format is stored in MongoDB.
+
+3. Benefits:
+
+- This approach makes representation of the date according to the user's browser locale and timezone easier.
+- It ensures consistency across different parts of the application.
+
+By using ISO 8601 UTC format, you maintain a standardized date-time representation in your database while allowing flexible display options on the client-side.

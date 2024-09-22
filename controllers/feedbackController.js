@@ -37,7 +37,10 @@ exports.getFeedbackById = async (req, res) => {
 // Get all feedbacks
 exports.getAllFeedbacks = async (req, res) => {
   try {
-    const feedbacks = await Feedback.find().populate("categoryId");
+    const feedbacks = await Feedback.find()
+      .populate("booking_id")
+      .populate("cust_id")
+      .populate("prof_id");
     if (!feedbacks.length) {
       return res
         .status(200)

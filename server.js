@@ -10,11 +10,13 @@ const customerRoutes = require("./routes/customerRoute");
 const professionalRoutes = require("./routes/professionalRoute"); // import Professional routes
 const dashboardRoutes = require("./routes/dashboardRoute"); // New dashboard route
 const serviceRoutes = require("./routes/serviceRoute"); // Import the service routes
-const imageRoute = require("./routes/imageRoute");
+//const imageRoute = require("./routes/imageRoute");
 const categoryRoute = require("./routes/categoryRoute");
 const feedbackRoutes = require("./routes/feedbackRoute");
 const bookingRoutes = require("./routes/bookingRoute");
 const favouriteRoutes = require("./routes/favouriteRoute");
+const fAQRoute = require("./routes/fAQRoute"); // Import FAQ routes
+
 connectDB();
 
 const port = process.env.PORT || 8081;
@@ -38,7 +40,7 @@ app.use("/categories", categoryRoute);
 app.use("/api/services", serviceRoutes);
 app.use("/faqs", fAQRoute);
 // Use the booking routes
-app.use("/", bookingRoutes);
+app.use("/booking", bookingRoutes);
 //Use the feedback routes
 app.use("/feedback", feedbackRoutes);
 //Use the favourite routes

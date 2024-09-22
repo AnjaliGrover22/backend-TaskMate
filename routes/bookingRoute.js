@@ -1,51 +1,37 @@
-// Import the Express framework
-const express = require("express");
+// routes/bookingRoutes.js
 
-// Create a new router object
+const express = require("express");
+const {
+  createBooking,
+  getAllBookings,
+  getBookingById,
+  updateBooking,
+  deleteBooking,
+  getCustomerBookings,
+  getProfessionalBookings,
+} = require("../controllers/bookingController.js");
+
 const router = express.Router();
 
-// Import the booking controller which contains the logic for handling booking-related requests
-const bookingController = require("../controllers/bookingController");
+// Create a new booking
+router.post("/", createBooking);
 
-// Define routes and associate them with controller functions
+// Get all bookings
+router.get("/", getAllBookings);
 
-// POST route to create a new booking
-// When a POST request is made to '/bookings', the createBooking function from the controller is called
-router.post("/bookings", bookingController.createBooking);
+// Get a specific booking by ID
+router.get("/:id", getBookingById);
 
-// GET route to retrieve all bookings
-// When a GET request is made to '/bookings', the getAllBookings function from the controller is called
-router.get("/bookings", bookingController.getAllBookings);
+// Update a booking
+router.put("/:id", updateBooking);
 
-// GET route to retrieve a specific booking by its ID
-// When a GET request is made to '/bookings/:id', the getBookingById function from the controller is called
-// The :id in the path is a route parameter that will be passed to the controller function
-router.get("/bookings/:id", bookingController.getBookingById);
+// Delete a booking
+router.delete("/:id", deleteBooking);
 
-// PUT route to update a specific booking
-// When a PUT request is made to '/bookings/:id', the updateBooking function from the controller is called
-// This route is used to update an existing booking
-router.put("/bookings/:id", bookingController.updateBooking);
+// Get bookings for a specific customer
+router.get("/customer/:custId", getCustomerBookings);
 
-// DELETE route to delete a specific booking
-// When a DELETE request is made to '/bookings/:id', the deleteBooking function from the controller is called
-router.delete("/bookings/:id", bookingController.deleteBooking);
+// Get bookings for a specific professional
+router.get("/professional/:profId", getProfessionalBookings);
 
-// GET route to retrieve all bookings for a specific customer
-// When a GET request is made to '/customer-bookings/:customerId', the getCustomerBookings function is called
-// This route is used to get all bookings associated with a particular customer
-router.get(
-  "/customer-bookings/:customerId",
-  bookingController.getCustomerBookings
-);
-
-// GET route to retrieve all bookings for a specific professional
-// When a GET request is made to '/professional-bookings/:professionalId', the getProfessionalBookings function is called
-// This route is used to get all bookings associated with a particular professional
-router.get(
-  "/professional-bookings/:professionalId",
-  bookingController.getProfessionalBookings
-);
-
-// Export the router so it can be used in other parts of the application
 module.exports = router;

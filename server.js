@@ -44,7 +44,7 @@ app.use("/booking", bookingRoutes);
 //Use the feedback routes
 app.use("/feedback", feedbackRoutes);
 //Use the favourite routes
-app.use("/", favouriteRoutes);
+app.use("/favourite", favouriteRoutes);
 
 app.listen(port, () =>
   console.log(`Server running on http://localhost:${port}`.bgGreen.black)

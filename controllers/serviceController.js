@@ -1,5 +1,5 @@
 const Service = require('../schemas/Service');
-const Category = require('../schemas/ServiceCategory');
+const Category = require('../schemas/Category');
 const cloudinary = require('cloudinary').v2;
 
 // Get all services
@@ -35,7 +35,7 @@ const createService = async (req, res) => {
     try {
         const { name, description, serviceCharge, categoryId } = req.body;
 
-        const categoryExists = await ServiceCategory.findById(categoryId); // Updated reference
+        const categoryExists = await Category.findById(categoryId);
         if (!categoryExists) {
             return res.status(400).json({ message: 'Category does not exist' });
         }
@@ -60,7 +60,7 @@ const updateService = async (req, res) => {
         const { id } = req.params;
         const { name, description, serviceCharge, categoryId } = req.body;
 
-        const categoryExists = await ServiceCategory.findById(categoryId); // Updated reference
+        const categoryExists = await Category.findById(categoryId);
         if (!categoryExists) {
             return res.status(400).json({ message: 'Category does not exist' });
         }

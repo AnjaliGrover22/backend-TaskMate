@@ -5,7 +5,8 @@ const Category = new Schema({
   name: {
     type: String,
     required: true,
-    minLength: [10, "Category length must be atleast  20 characters "],
+    unique: true,
+    minLength: [5, "Category length must be atleast  20 characters "],
     maxLength: [50, "Category length must be maximum  50 characters "],
   },
   image: {

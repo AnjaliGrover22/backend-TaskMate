@@ -9,8 +9,9 @@ const connectDB = require("./db/dbinit");
 const customerRoutes = require("./routes/customerRoute");
 const professionalRoutes = require("./routes/professionalRoute"); // import Professional routes
 const dashboardRoutes = require("./routes/dashboardRoute"); // New dashboard route
-const serviceRoutes = require('./routes/serviceRoute');// Import the service routes
+const serviceRoutes = require("./routes/serviceRoute"); // Import the service routes
 const categoryRoute = require("./routes/categoryRoute"); //Import categories routes
+const fAQRoute = require("./routes/fAQRoute"); // Import FAQ routes
 
 connectDB();
 
@@ -25,14 +26,13 @@ app.get("/", (req, res) => {
   res.send("welcome to TaskMate DB ");
 });
 
-
 // Use Customer and Professional routes
 app.use("/customer", customerRoutes);
 app.use("/professional", professionalRoutes); // add Professional routes
 app.use("/mydashboard", dashboardRoutes);
 app.use("/categories", categoryRoute);
 app.use("/api/services", serviceRoutes);
-//app.use("/api/category", categoryRoute);
+app.use("/faqs", fAQRoute);
 
 app.listen(port, () =>
   console.log(`Server running on http://localhost:${port}`.bgGreen.black)

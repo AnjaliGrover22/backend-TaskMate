@@ -35,7 +35,7 @@ const uploadCategory = async (req, res) => {
       .json({ message: "Category successfully created", category });
   } catch (error) {
     console.error(error);
-    return resok
+    return res
       .status(500)
       .json({ error: "Server error, unable to create category" });
   }

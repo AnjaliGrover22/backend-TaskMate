@@ -1,169 +1,136 @@
-const Booking = require("../schemas/Booking"); // Import the Booking schema
-const moment = require("moment-timezone"); // Import moment-timezone for date/time handling
+// controllers/bookingController.js
+
+const Booking = require("../schemas/Booking");
+const { isValidISODateString } = require("iso-datestring-validator");
+
+// Helper function to validate UTC ISO date string
+const isValidUTCISODateString = (dateString) => {
+  if (!isValidISODateString(dateString)) {
+    return false;
+  }
+  // Check if it's in UTC (ends with 'Z' or +00:00)
+  return dateString.endsWith("Z") || dateString.endsWith("+00:00");
+};
 
 // Create a new booking
 exports.createBooking = async (req, res) => {
   try {
-    const bookingData = req.body; // Get booking data from request body
+    const { appointmentDateTime, ...otherFields } = req.body;
 
-    // Parse and validate the appointment date and time
-    const appointmentDateTime = moment.tz(
-      `${bookingData.appointmentDate} ${bookingData.appointmentTime}`,
-      "DD.MM.YYYY HH:mm",
-      "Europe/Berlin"
-    );
-
-    // Check if the parsed date/time is valid
-    if (!appointmentDateTime.isValid()) {
-      return res
-        .status(400)
-        .json({ error: "Invalid appointment date or time" });
-    }
-
-    // Check if the appointment is on a weekday (not Saturday or Sunday)
-    if (appointmentDateTime.day() === 0 || appointmentDateTime.day() === 6) {
-      return res
-        .status(400)
-        .json({ error: "Appointments are only available on weekdays" });
-    }
-
-    // Check if the appointment is within business hours (8:00 AM to 6:00 PM)
-    const hour = appointmentDateTime.hour();
-    const minute = appointmentDateTime.minute();
-    if (hour < 8 || (hour === 18 && minute > 0) || hour > 18) {
+    if (!isValidUTCISODateString(appointmentDateTime)) {
       return res.status(400).json({
-        error: "Appointments are only available between 08:00 and 18:00",
+        message:
+          "Invalid appointment date and time. Please provide a valid UTC ISO date string.",
       });
     }
 
-    // Check if the appointment is in the future
-    if (appointmentDateTime.isBefore(moment())) {
-      return res
-        .status(400)
-        .json({ error: "Appointment date and time must be in the future" });
-    }
+    const newBooking = new Booking({
+      ...otherFields,
+      appointmentDateTime: new Date(appointmentDateTime),
+    });
 
-    // Create a new Booking instance and save it to the database
-    const newBooking = new Booking(bookingData);
-    await newBooking.save();
-    res.status(201).json(newBooking); // Respond with the created booking
+    const savedBooking = await newBooking.save();
+    res.status(201).json(savedBooking);
   } catch (error) {
-    res.status(400).json({ error: error.message }); // Handle any errors
+    res.status(400).json({ message: error.message });
   }
 };
 
 // Get all bookings
 exports.getAllBookings = async (req, res) => {
   try {
-    // Fetch all bookings and populate referenced fields
     const bookings = await Booking.find()
-      .populate("cust_id")
-      .populate("prof_id")
-      .populate("service_id");
-    res.status(200).json(bookings); // Respond with all bookings
+      .populate("cust_id", "name email")
+      .populate("prof_id", "name email")
+      .populate("service_id", "name price");
+    res.json(bookings);
   } catch (error) {
-    res.status(500).json({ error: error.message }); // Handle any errors
+    res.status(500).json({ message: error.message });
   }
 };
 
-// Get a single booking by ID
+// Get a specific booking by ID
 exports.getBookingById = async (req, res) => {
   try {
-    // Find a booking by ID and populate referenced fields
     const booking = await Booking.findById(req.params.id)
-      .populate("cust_id")
-      .populate("prof_id")
-      .populate("service_id");
-    if (!booking) {
-      return res.status(404).json({ error: "Booking not found" });
-    }
-    res.status(200).json(booking); // Respond with the found booking
+      .populate("cust_id", "name email")
+      .populate("prof_id", "name email")
+      .populate("service_id", "name price");
+    if (!booking) return res.status(404).json({ message: "Booking not found" });
+    res.json(booking);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
 // Update a booking
 exports.updateBooking = async (req, res) => {
   try {
-    const { appointmentDate, appointmentTime, ...updateData } = req.body;
+    const { appointmentDateTime, ...otherFields } = req.body;
 
-    // If date or time is being updated, validate them
-    if (appointmentDate && appointmentTime) {
-      const appointmentDateTime = moment.tz(
-        `${appointmentDate} ${appointmentTime}`,
-        "DD.MM.YYYY HH:mm",
-        "Europe/Berlin"
-      );
-
-      // Add validated date and time to update data
-      if (!appointmentDateTime.isValid()) {
-        return res
-          .status(400)
-          .json({ error: "Invalid appointment date or time" });
-      }
-
-      updateData.appointmentDate = appointmentDate;
-      updateData.appointmentTime = appointmentTime;
+    if (appointmentDateTime && !isValidUTCISODateString(appointmentDateTime)) {
+      return res.status(400).json({
+        message:
+          "Invalid appointment date and time. Please provide a valid UTC ISO date string.",
+      });
     }
 
-    // Find the booking by ID and update it
+    const updateData = {
+      ...otherFields,
+      ...(appointmentDateTime && {
+        appointmentDateTime: new Date(appointmentDateTime),
+      }),
+    };
+
     const updatedBooking = await Booking.findByIdAndUpdate(
       req.params.id,
       updateData,
-      { new: true, runValidators: true }
+      { new: true }
     );
-
-    if (!updatedBooking) {
-      return res.status(404).json({ error: "Booking not found" });
-    }
-
-    res.status(200).json(updatedBooking); // Respond with the updated booking
+    if (!updatedBooking)
+      return res.status(404).json({ message: "Booking not found" });
+    res.json(updatedBooking);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 };
 
 // Delete a booking
 exports.deleteBooking = async (req, res) => {
   try {
-    // Find the booking by ID and delete it
     const deletedBooking = await Booking.findByIdAndDelete(req.params.id);
-    if (!deletedBooking) {
-      return res.status(404).json({ error: "Booking not found" });
-    }
-    res.status(200).json({ message: "Booking deleted successfully" });
+    if (!deletedBooking)
+      return res.status(404).json({ message: "Booking not found" });
+    res.json({ message: "Booking deleted successfully" });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
 // Get bookings for a specific customer
 exports.getCustomerBookings = async (req, res) => {
   try {
-    // Find all bookings for a specific customer and populate referenced fields
-    const bookings = await Booking.find({
-      cust_id: req.params.customerId,
-    })
-      .populate("prof_id")
-      .populate("service_id");
-    res.status(200).json(bookings); // Respond with the customer's bookings
+    const bookings = await Booking.find({ cust_id: req.params.custId })
+      .populate("prof_id", "name email")
+      .populate("service_id", "name price");
+    if (!bookings)
+      return res.status(404).json({ message: "Booking not found" });
+    res.json(bookings);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
 // Get bookings for a specific professional
 exports.getProfessionalBookings = async (req, res) => {
   try {
-    // Find all bookings for a specific professional and populate referenced fields
-    const bookings = await Booking.find({
-      prof_id: req.params.professionalId,
-    })
-      .populate("cust_id")
-      .populate("service_id");
-    res.status(200).json(bookings); // Respond with the professional's bookings
+    const bookings = await Booking.find({ prof_id: req.params.profId })
+      .populate("cust_id", "name email")
+      .populate("service_id", "name price");
+    if (!bookings)
+      return res.status(404).json({ message: "Booking not found" });
+    res.json(bookings);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };

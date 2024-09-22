@@ -1,4 +1,4 @@
-# Project Structure :backend-TaskMate
+# Project Structure : backend-TaskMate
 
 ## Create A backend-TaskMate Repo
 
@@ -80,17 +80,7 @@ Inside Schemas Folder
 - FAQ.js
 - Payment.js
 
-Inside controllers Folder
-
-- customerController.js
-- professionalsController.js
-- bookingController.js
-
-Inside routes Folder
-
-- customerRoute.js
-- professionalRoute.js
-- bookingRoute.js
+created controllers and Routes for each schemas
 
 - npm install iso-datestring-validator
 - backend validates date in ISO 8601 UTC format , same format stored in MongoDB.

@@ -3,11 +3,18 @@ const Feedback = require("../schemas/Feedback");
 // Create a new feedback
 exports.createFeedback = async (req, res) => {
   try {
-    const feedback = new Feedback(req.body);
-    await feedback.save();
-    res.status(201).json(feedback);
+    const { booking_id, cust_id, prof_id, rating, reviewText } = req.body;
+    const newFeedback = new Feedback({
+      booking_id,
+      cust_id,
+      prof_id,
+      rating,
+      reviewText,
+    });
+    const savedFeedback = await newFeedback.save();
+    res.status(201).json(savedFeedback);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 };
 
@@ -46,28 +53,53 @@ exports.getAllFeedbacks = async (req, res) => {
 // Update feedback by ID
 exports.updateFeedback = async (req, res) => {
   try {
-    const feedback = await Feedback.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
-
-    if (!feedback)
+    const updatedFeedback = await Feedback.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    if (!updatedFeedback) {
       return res.status(404).json({ message: "Feedback not found" });
-    res.json(feedback);
+    }
+    res.json(updatedFeedback);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 };
 
 // Delete feedback by ID
 exports.deleteFeedback = async (req, res) => {
   try {
-    const feedback = await Feedback.findByIdAndDelete(req.params.id);
-
-    if (!feedback)
+    const deletedFeedback = await Feedback.findByIdAndDelete(req.params.id);
+    if (!deletedFeedback) {
       return res.status(404).json({ message: "Feedback not found" });
+    }
     res.json({ message: "Feedback deleted successfully" });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get feedback by professional ID
+exports.getFeedbackByProfessional = async (req, res) => {
+  try {
+    const feedback = await Feedback.find({ prof_id: req.params.profId })
+      .populate("booking_id")
+      .populate("cust_id");
+    res.json(feedback);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get feedback by customer ID
+exports.getFeedbackByCustomer = async (req, res) => {
+  try {
+    const feedback = await Feedback.find({ cust_id: req.params.custId })
+      .populate("booking_id")
+      .populate("prof_id");
+    res.json(feedback);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };

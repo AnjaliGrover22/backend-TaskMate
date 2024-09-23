@@ -109,3 +109,70 @@ By using ISO 8601 UTC format, you maintain a standardized date-time representati
 ## Backend webservice render link
 
 https://backend-taskmate.onrender.com
+
+## Run Backend in Docker Container
+
+### Docker Commands for Beginners
+
+This README provides an overview of essential Docker commands for beginners working with the backend-taskmate project.
+
+### Building the Docker Image
+
+To create a Docker image for the backend-taskmate project, use the following command:
+
+```
+docker build -t backend-taskmate .
+```
+
+This command builds a Docker image using the Dockerfile in the current directory (.) and tags it with the name "backend-taskmate". \
+
+### Listing Docker Images
+
+To view all Docker images on your system, including the newly created backend-taskmate image, use:
+
+```
+docker images
+```
+
+This command displays a list of all Docker images, showing details such as repository names, tags, image IDs, creation dates, and sizes.
+
+### Running the Docker Container
+
+To run the backend-taskmate container, use the following command:
+
+```
+docker run --env-file ./.env -p 8081:8081 backend-taskmate
+```
+
+This command:
+
+- Runs the backend-taskmate container
+- Loads environment variables from the .env file in the current directory
+- Maps port 8081 on the host to port 8081 in the container
+
+### Viewing Running Containers
+
+To see all currently running Docker containers, use:
+
+```
+docker ps
+```
+
+This command lists all active containers, displaying information such as container IDs, image names, creation times, status, and port mappings.
+
+### Stopping a Container
+
+To stop a running container, use the docker stop command followed by the container ID:
+
+```
+docker stop 191a3b2d4d31
+```
+
+Replace 191a3b2d4d31 with the actual container ID of the backend-taskmate container you want to stop.
+
+### Additional Tips
+
+- Always ensure you're in the correct directory containing your Dockerfile and .env file when running these commands.
+- The container ID (191a3b2d4d31 in the example) is unique to each container instance. Use docker ps to find the correct ID for your running container.
+- If you need to make changes to your application, remember to rebuild the Docker image and run a new container with the updated image. \
+  Happy Dockerizing!

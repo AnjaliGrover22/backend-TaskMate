@@ -24,6 +24,6 @@ app.put("/:id", updateCustomer);
 
 app
   .route("/:id/uploadImage")
-  .post(upload.single("profileImage"), uploadCustomerImage);
+  .put(upload.single("picture"), uploadCustomerImage);
 
 module.exports = app;

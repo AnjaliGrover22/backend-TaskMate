@@ -51,7 +51,9 @@ const getAllJobs = async (req, res) => {
 const getOneJobById = async (req, res) => {
   try {
     const { id } = req.params;
-    const JobById = await AddJobModal.findById(id);
+    const JobById = await AddJobModal.findById(id)
+      .populate("categoryId")
+      .populate("service_id");
     if (!JobById) return res.status(404).json({ message: "Job not found" });
     res.status(200).json(JobById);
   } catch (error) {
@@ -69,11 +71,21 @@ const UpdateJobById = async (req, res) => {
       return res.status(404).json({ message: "Job does not exist" });
     }
 
-    const updatedJob = await AddJobModal.findByIdAndUpdate(
-      id,
-      req.body, // Pass req.body
-      { new: true }
-    );
+    // Check if an image was uploaded
+    let referenceImage;
+    if (req.file) {
+      referenceImage = req.file.path; // Store the new image path
+    }
+
+    // Prepare the update object
+    const updateData = {
+      ...req.body,
+      ...(referenceImage && { referenceImage }), // Add referenceImage only if it exists
+    };
+
+    const updatedJob = await AddJobModal.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
 
     res
       .status(200)

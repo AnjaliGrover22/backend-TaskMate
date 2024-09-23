@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
-const { Schema } = mongoose;
 
-const Category = new Schema({
+const Category = new mongoose.Schema({
   name: {
     type: String,
     required: true,

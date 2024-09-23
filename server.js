@@ -17,6 +17,7 @@ const bookingRoutes = require("./routes/bookingRoute"); //Import booking route
 const favouriteRoutes = require("./routes/favouriteRoute"); //Import favourite route
 const fAQRoute = require("./routes/fAQRoute"); // Import FAQ route
 const addJobRoutes = require("./routes/addJobModalRoute");
+const pintoDashboardRoutes = require("./routes/pintoDashboardRoute");
 
 connectDB();
 
@@ -29,10 +30,26 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Use Customer and Professional routes
+app.use("/customer", customerRoutes);
+app.use("/professional", professionalRoutes); // add Professional routes
+//app.use("/mydashboard", dashboardRoutes);
+app.use("/categories", categoryRoute);
+app.use("/api/services", serviceRoutes);
+app.use("/faqs", fAQRoute);
+app.use("/booking", bookingRoutes); // Use the booking routes
+app.use("/feedback", feedbackRoutes); //Use the feedback routes
+app.use("/favourite", favouriteRoutes); //Use the favourite routes
+app.use("/dashboard", pintoDashboardRoutes); //Use the dashboard routes
+
+app.use((req, res, next) => {
+  console.log(req.path, req.method);
+  next();
+});
+
 app.get("/", (req, res) => {
   res.send("welcome to TaskMate DB ");
 });
-
 // All Customer and Professional routes defined here
 
 app.use("/customer", customerRoutes); //Customer routes

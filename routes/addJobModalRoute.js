@@ -19,7 +19,7 @@ addJobrouter.get("/", getAllJobs);
 addJobrouter.get("/:id", getOneJobById);
 
 // Update a job
-addJobrouter.put("/:id", UpdateJobById);
+addJobrouter.put("/:id", upload.single("referenceImage"), UpdateJobById);
 
 // Delete a job
 addJobrouter.delete("/:id", DeleteJobById);

@@ -16,6 +16,7 @@ const feedbackRoutes = require("./routes/feedbackRoute");
 const bookingRoutes = require("./routes/bookingRoute");
 const favouriteRoutes = require("./routes/favouriteRoute");
 const fAQRoute = require("./routes/fAQRoute"); // Import FAQ routes
+const pintoDashboardRoutes = require("./routes/pintoDashboardRoute");
 
 connectDB();
 
@@ -39,12 +40,10 @@ app.use("/mydashboard", dashboardRoutes);
 app.use("/categories", categoryRoute);
 app.use("/api/services", serviceRoutes);
 app.use("/faqs", fAQRoute);
-// Use the booking routes
-app.use("/booking", bookingRoutes);
-//Use the feedback routes
-app.use("/feedback", feedbackRoutes);
-//Use the favourite routes
-app.use("/favourite", favouriteRoutes);
+app.use("/booking", bookingRoutes); // Use the booking routes
+app.use("/feedback", feedbackRoutes); //Use the feedback routes
+app.use("/favourite", favouriteRoutes); //Use the favourite routes
+app.use("/dashboard", pintoDashboardRoutes); //Use the dashboard routes
 
 app.listen(port, () =>
   console.log(`Server running on http://localhost:${port}`.bgGreen.black)

@@ -2,6 +2,7 @@
 const mongoose = require("mongoose");
 const Professional = require("../schemas/Professional");
 const jwt = require("jsonwebtoken");
+const cloudinary = require("cloudinary").v2;
 
 const createToken = (_id) => {
   return jwt.sign({ _id }, process.env.SECRET, { expiresIn: "1d" });
@@ -34,6 +35,7 @@ const signUpProfessional = async (req, res) => {
     phoneNumber,
     address,
     aboutMe,
+    rating,
     jobProfile,
   } = req.body;
 
@@ -50,6 +52,7 @@ const signUpProfessional = async (req, res) => {
       phoneNumber,
       address,
       aboutMe,
+      rating,
       jobProfile
     );
 
@@ -70,10 +73,22 @@ const getProfessionalById = async (req, res) => {
   }
 
   try {
-    const professional = await Professional.findById(id);
+    const professional = await Professional.findById(id)
+      .populate("rating")
+      .populate("jobProfile.skill")
+      .exec();
 
     if (!professional) {
       return res.status(404).json({ error: "Professional not found" });
+    }
+
+    // Calculate average rating
+    if (professional.rating.length > 0) {
+      const totalRating = professional.rating.reduce(
+        (sum, feedback) => sum + feedback.rating,
+        0
+      );
+      professional.averageRating = totalRating / professional.rating.length;
     }
 
     res.status(200).json(professional);
@@ -106,9 +121,43 @@ const updateProfessional = async (req, res) => {
   }
 };
 
+const uploadProfessionalImage = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Ensure the professional exists before attempting to upload the image
+    const professional = await Professional.findById(id);
+    if (!professional) {
+      return res.status(404).json({ message: "professional not found" });
+    }
+
+    // Check if the file was uploaded correctly by multer
+    if (req.file && req.file.path) {
+      // Update only the image field, avoiding validation of other fields
+      professional.profileImage = req.file.path;
+      await professional.save({ validateBeforeSave: false }); // Avoid validation for other fields like categoryId
+
+      return res
+        .status(200)
+        .json({ message: "profileImage uploaded successfully", professional });
+    } else {
+      console.log(req.file); // Add this log to see what req.file looks like
+      return res
+        .status(422)
+        .json({ message: "Invalid profileImage or no file uploaded" });
+    }
+  } catch (error) {
+    console.error("Error while uploading professional profileImage:", error); // Log the error to the console
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
+};
+
 module.exports = {
   loginProfessional,
   signUpProfessional,
   getProfessionalById,
   updateProfessional,
+  uploadProfessionalImage,
 };

@@ -58,15 +58,30 @@ const professionalSchema = new mongoose.Schema({
   aboutMe: {
     type: String,
   },
+  averageRating: {
+    type: Number,
+    default: 0,
+  },
+  rating: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Feedback", // Reference to Feedback schema
+    },
+  ],
   jobProfile: {
+    perHrCharge: { type: Number },
+    completedHrs: { type: Number },
     experience: {
       type: Number,
       required: true,
     },
-    skill: {
-      type: [String], // Array of skills
-      required: true,
-    },
+    skill: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Service", // Reference to the Service schema
+        required: true,
+      },
+    ],
     country: {
       type: String,
       required: true,
@@ -94,6 +109,7 @@ professionalSchema.statics.signup = async function (
   phoneNumber,
   address,
   aboutMe,
+  rating,
   jobProfile
 ) {
   // Check if email already exists
@@ -116,6 +132,7 @@ professionalSchema.statics.signup = async function (
     phoneNumber,
     address,
     aboutMe,
+    rating,
     jobProfile,
   });
 

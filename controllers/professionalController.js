@@ -96,6 +96,36 @@ const getProfessionalById = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+// Get all Professionals
+const getAllProfessionals = async (req, res) => {
+  try {
+    const professionals = await Professional.find({})
+      .populate("rating")
+      .populate("jobProfile.skill")
+      .exec();
+
+    if (!professionals || professionals.length === 0) {
+      return res.status(404).json({ error: "No professionals found" });
+    }
+
+    // Optionally, calculate average rating for each professional
+    professionals.forEach((professional) => {
+      if (professional.rating.length > 0) {
+        const totalRating = professional.rating.reduce(
+          (sum, feedback) => sum + feedback.rating,
+          0
+        );
+        professional.averageRating = totalRating / professional.rating.length;
+      } else {
+        professional.averageRating = 0;
+      }
+    });
+
+    res.status(200).json(professionals);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
 // Update Professional
 const updateProfessional = async (req, res) => {
@@ -158,6 +188,7 @@ module.exports = {
   loginProfessional,
   signUpProfessional,
   getProfessionalById,
+  getAllProfessionals,
   updateProfessional,
   uploadProfessionalImage,
 };

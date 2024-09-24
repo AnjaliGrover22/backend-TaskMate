@@ -6,6 +6,7 @@ const {
   loginProfessional,
   signUpProfessional,
   getProfessionalById,
+  getAllProfessionals,
   updateProfessional,
   uploadProfessionalImage,
 } = require("../controllers/professionalController");
@@ -20,6 +21,8 @@ app.post("/signup", signUpProfessional);
 
 // Get Professional by ID
 app.get("/:id", getProfessionalById);
+// Get Professional
+app.get("/", getAllProfessionals);
 
 // Update Professional
 app.put("/:id", updateProfessional);

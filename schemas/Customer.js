@@ -80,7 +80,7 @@ customerSchema.statics.signup = async function (
     throw Error("Email already in use");
   }
 
-  if (!email || !password || !firstName || !lastName || !gender) {
+  if (!email || !password || !firstName || !lastName) {
     throw Error("All required fields must be filled");
   }
 

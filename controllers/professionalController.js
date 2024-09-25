@@ -18,7 +18,11 @@ const loginProfessional = async (req, res) => {
     // Create token
     const token = createToken(professional._id);
 
-    res.status(200).json({ email, token });
+    res.status(200).json({
+      email: professional.email,
+      firstName: professional.firstName,
+      token,
+    });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -58,7 +62,11 @@ const signUpProfessional = async (req, res) => {
 
     // Create a JWT token
     const token = createToken(professional._id);
-    res.status(200).json({ email, token });
+    res.status(200).json({
+      email: professional.email,
+      firstName: professional.firstName,
+      token,
+    });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

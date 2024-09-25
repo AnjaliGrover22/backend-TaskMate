@@ -6,7 +6,6 @@ const cloudinary = require("cloudinary").v2;
 const createToken = (_id) => {
   return jwt.sign({ _id }, process.env.SECRET, { expiresIn: "1d" });
 };
-
 // login Customer
 const loginCustomer = async (req, res) => {
   const { email, password } = req.body;
@@ -14,15 +13,19 @@ const loginCustomer = async (req, res) => {
   try {
     const customer = await Customer.login(email, password);
 
-    //create token
+    // Create token
     const token = createToken(customer._id);
 
-    res.status(200).json({ email, token });
+    // Return firstName along with email and token
+    res
+      .status(200)
+      .json({ email: customer.email, firstName: customer.firstName, token });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
 
+// signUpCustomer
 const signUpCustomer = async (req, res) => {
   const {
     profileImage,
@@ -51,7 +54,11 @@ const signUpCustomer = async (req, res) => {
 
     // Create token
     const token = createToken(customer._id);
-    res.status(200).json({ email, token });
+
+    // Return firstName along with email and token
+    res
+      .status(200)
+      .json({ email: customer.email, firstName: customer.firstName, token });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

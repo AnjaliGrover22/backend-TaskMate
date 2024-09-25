@@ -17,9 +17,12 @@ const loginCustomer = async (req, res) => {
     const token = createToken(customer._id);
 
     // Return firstName along with email and token
-    res
-      .status(200)
-      .json({ email: customer.email, firstName: customer.firstName, token });
+    res.status(200).json({
+      email: customer.email,
+      firstName: customer.firstName,
+      profileImage: customer.profileImage,
+      token,
+    });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -56,9 +59,12 @@ const signUpCustomer = async (req, res) => {
     const token = createToken(customer._id);
 
     // Return firstName along with email and token
-    res
-      .status(200)
-      .json({ email: customer.email, firstName: customer.firstName, token });
+    res.status(200).json({
+      email: customer.email,
+      firstName: customer.firstName,
+      profileImage: customer.profileImage,
+      token,
+    });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

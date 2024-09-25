@@ -21,6 +21,7 @@ const loginProfessional = async (req, res) => {
     res.status(200).json({
       email: professional.email,
       firstName: professional.firstName,
+      profileImage: professional.profileImage,
       token,
     });
   } catch (error) {
@@ -65,6 +66,7 @@ const signUpProfessional = async (req, res) => {
     res.status(200).json({
       email: professional.email,
       firstName: professional.firstName,
+      profileImage: professional.profileImage,
       token,
     });
   } catch (error) {

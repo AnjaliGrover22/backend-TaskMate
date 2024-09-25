@@ -107,7 +107,19 @@ professionalSchema.statics.signup = async function (
   if (exists) {
     throw Error("Email already in use");
   }
+  if (!email || !password || !firstName || !lastName) {
+    throw Error("All required fields must be filled");
+  }
 
+  if (!validator.isEmail(email)) {
+    throw Error("Email is not valid");
+  }
+
+  if (!validator.isStrongPassword(password)) {
+    throw Error(
+      "Password must be at least 8 characters long, include one uppercase letter, one number, and one symbol"
+    );
+  }
   // Hash password
   const salt = await bcrypt.genSalt(10);
   const hash = await bcrypt.hash(password, salt);
@@ -131,6 +143,10 @@ professionalSchema.statics.signup = async function (
 
 // Static login method
 professionalSchema.statics.login = async function (email, password) {
+  if (!email || !password) {
+    throw Error("All fields must be filled");
+  }
+
   const professional = await this.findOne({ email });
 
   if (!professional) {

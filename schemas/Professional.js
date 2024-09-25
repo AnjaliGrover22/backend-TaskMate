@@ -17,7 +17,6 @@ const professionalSchema = new mongoose.Schema({
   gender: {
     type: String,
     enum: ["male", "female", "other"],
-    required: true,
   },
   email: {
     type: String,
@@ -35,7 +34,6 @@ const professionalSchema = new mongoose.Schema({
   },
   phoneNumber: {
     type: String,
-    required: true,
     validate: [
       (value) => validator.isMobilePhone(value),
       "Invalid phone number",
@@ -44,15 +42,12 @@ const professionalSchema = new mongoose.Schema({
   address: {
     street: {
       type: String,
-      required: true,
     },
     zipCode: {
       type: String,
-      required: true,
     },
     state: {
       type: String,
-      required: true,
     },
   },
   aboutMe: {
@@ -73,27 +68,22 @@ const professionalSchema = new mongoose.Schema({
     completedHrs: { type: Number },
     experience: {
       type: Number,
-      required: true,
     },
     skill: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Service", // Reference to the Service schema
-        required: true,
       },
     ],
     country: {
       type: String,
-      required: true,
     },
     city: {
       type: String,
-      required: true,
     },
     paymentOption: {
       type: String,
       enum: ["cash", "credit", "bank transfer"],
-      required: true,
     },
   },
 });

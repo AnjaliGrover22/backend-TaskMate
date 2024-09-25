@@ -31,11 +31,9 @@ const customerSchema = new mongoose.Schema({
   gender: {
     type: String,
     enum: ["male", "female", "other"],
-    required: true,
   },
   phoneNumber: {
     type: String,
-    required: true,
     validate: [
       (value) => validator.isMobilePhone(value),
       "Invalid phone number",
@@ -44,15 +42,12 @@ const customerSchema = new mongoose.Schema({
   address: {
     street: {
       type: String,
-      required: true,
     },
     zipCode: {
       type: String,
-      required: true,
     },
     state: {
       type: String,
-      required: true,
     },
   },
   aboutMe: {

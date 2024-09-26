@@ -1,33 +1,26 @@
 const AddJobModal = require("../schemas/AddJobModal");
 
-// Create new job card
+// Create new job listing (only for professionals)
 const createNewJob = async (req, res) => {
   try {
-    const {
-      categoryId,
-      service_id,
-      date,
-      startTime, // Start time
-      endTime,   // End time
-      country,
-      city,
-      description,
-      chargesPerHour,
-    } = req.body;
-
-    // Check if an image was uploaded
-    let referenceImage;
-    if (req.file) {
-      referenceImage = req.file.path; // Store the image path
+    // Ensure the user is a professional
+    if (req.user.type !== "professional") {
+      return res.status(403).json({ message: "Access denied: Not a professional" });
     }
 
-    // Create the new job in the database
+    const { categoryId, service_id, date, startTime, endTime, country, city, description, chargesPerHour } = req.body;
+
+    // Check if an image was uploaded
+    let referenceImage = req.file ? req.file.path : null;
+
+    // Create the new job in the database associated with the professional's ID
     const newJob = await AddJobModal.create({
+      professionalId: req.user._id, // Get the professional's ID from req.user
       categoryId,
       service_id,
       date,
-      startTime, // Save start time
-      endTime,   // Save end time
+      startTime,
+      endTime,
       country,
       city,
       description,
@@ -41,38 +34,49 @@ const createNewJob = async (req, res) => {
   }
 };
 
-// Get all job cards
-const getAllJobs = async (req, res) => {
+// Get jobs for the logged-in professional
+const getJobsByProfessional = async (req, res) => {
   try {
-    const allJobs = await AddJobModal.find()
+    // Ensure the user is a professional
+    if (req.user.type !== "professional") {
+      return res.status(403).json({ message: "Access denied: Not a professional" });
+    }
+
+    // Find jobs created by this professional
+    const jobs = await AddJobModal.find({ professionalId: req.user._id })
       .populate("categoryId")
       .populate("service_id");
-    res.status(200).json(allJobs);
+
+    res.status(200).json(jobs);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Get one job card by Id
+// Get a single job by its ID
 const getOneJobById = async (req, res) => {
   try {
     const { id } = req.params;
-    const jobById = await AddJobModal.findById(id)
+    const job = await AddJobModal.findById(id)
       .populate("categoryId")
       .populate("service_id");
-    if (!jobById) {
+
+    if (!job) {
       return res.status(404).json({ message: "Job not found" });
     }
-    res.status(200).json(jobById);
+
+    res.status(200).json(job);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Update the job by Id
-const UpdateJobById = async (req, res) => {
+// Update a job by its ID
+const updateJobById = async (req, res) => {
   try {
     const { id } = req.params;
+
+    // Find the job by ID
     const jobExists = await AddJobModal.findById(id);
 
     if (!jobExists) {
@@ -80,20 +84,15 @@ const UpdateJobById = async (req, res) => {
     }
 
     // Check if an image was uploaded
-    let referenceImage;
-    if (req.file) {
-      referenceImage = req.file.path; // Store the new image path
-    }
+    let referenceImage = req.file ? req.file.path : jobExists.referenceImage;
 
-    // Prepare the update object
+    // Update the job details
     const updateData = {
       ...req.body,
-      ...(referenceImage && { referenceImage }), // Add referenceImage only if it exists
+      referenceImage, // Update the reference image if provided
     };
 
-    const updatedJob = await AddJobModal.findByIdAndUpdate(id, updateData, {
-      new: true,
-    });
+    const updatedJob = await AddJobModal.findByIdAndUpdate(id, updateData, { new: true });
 
     res.status(200).json({ message: "Job updated successfully", job: updatedJob });
   } catch (error) {
@@ -101,13 +100,14 @@ const UpdateJobById = async (req, res) => {
   }
 };
 
-// Delete the job by Id
-const DeleteJobById = async (req, res) => {
+// Delete a job by its ID
+const deleteJobById = async (req, res) => {
   try {
     const { id } = req.params;
-    const jobById = await AddJobModal.findByIdAndDelete(id);
 
-    if (!jobById) {
+    const job = await AddJobModal.findByIdAndDelete(id);
+
+    if (!job) {
       return res.status(404).json({ message: "Job not found" });
     }
 
@@ -119,8 +119,8 @@ const DeleteJobById = async (req, res) => {
 
 module.exports = {
   createNewJob,
-  getAllJobs,
+  getJobsByProfessional,
   getOneJobById,
-  UpdateJobById,
-  DeleteJobById,
+  updateJobById,
+  deleteJobById,
 };

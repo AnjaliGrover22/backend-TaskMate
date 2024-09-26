@@ -1,27 +1,29 @@
 const express = require("express");
 const addJobrouter = express.Router();
+const upload = require("../services/upload"); // Middleware for handling image uploads
+const requireAuth = require("../middlewares/requireAuth"); // Middleware to ensure authentication
+
 const {
   createNewJob,
-  getAllJobs,
+  getJobsByProfessional,
   getOneJobById,
-  UpdateJobById,
-  DeleteJobById,
+  updateJobById,
+  deleteJobById,
 } = require("../controllers/addJobModalController");
-const upload = require("../services/upload"); // Import the multer upload
 
-// Create a new job
-addJobrouter.post("/", upload.single("referenceImage"), createNewJob); // "referenceImage" should match the form field name
+// Route to create a new job (for authenticated professionals only)
+addJobrouter.post("/", requireAuth, upload.single("referenceImage"), createNewJob);
 
-// Get all jobs
-addJobrouter.get("/", getAllJobs);
+// Route to get all jobs for the logged-in professional (for authenticated professionals only)
+addJobrouter.get("/professional", requireAuth, getJobsByProfessional);
 
-// Get a job by ID
-addJobrouter.get("/:id", getOneJobById);
+// Route to get a single job by its ID
+addJobrouter.get("/:id", requireAuth, getOneJobById);
 
-// Update a job
-addJobrouter.put("/:id", upload.single("referenceImage"), UpdateJobById);
+// Route to update a job by its ID
+addJobrouter.put("/:id", requireAuth, upload.single("referenceImage"), updateJobById);
 
-// Delete a job
-addJobrouter.delete("/:id", DeleteJobById);
+// Route to delete a job by its ID
+addJobrouter.delete("/:id", requireAuth, deleteJobById);
 
 module.exports = addJobrouter;

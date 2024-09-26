@@ -1,12 +1,14 @@
 const AddJobModal = require("../schemas/AddJobModal");
 
-//create new job card
+// Create new job card
 const createNewJob = async (req, res) => {
   try {
     const {
       categoryId,
       service_id,
       date,
+      startTime, // Start time
+      endTime,   // End time
       country,
       city,
       description,
@@ -19,23 +21,27 @@ const createNewJob = async (req, res) => {
       referenceImage = req.file.path; // Store the image path
     }
 
+    // Create the new job in the database
     const newJob = await AddJobModal.create({
       categoryId,
       service_id,
       date,
+      startTime, // Save start time
+      endTime,   // Save end time
       country,
       city,
       description,
       referenceImage,
       chargesPerHour,
     });
+
     res.status(201).json({ message: "Job added successfully", job: newJob });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
-//get all job cards
+// Get all job cards
 const getAllJobs = async (req, res) => {
   try {
     const allJobs = await AddJobModal.find()
@@ -47,21 +53,23 @@ const getAllJobs = async (req, res) => {
   }
 };
 
-//get one job card by Id
+// Get one job card by Id
 const getOneJobById = async (req, res) => {
   try {
     const { id } = req.params;
-    const JobById = await AddJobModal.findById(id)
+    const jobById = await AddJobModal.findById(id)
       .populate("categoryId")
       .populate("service_id");
-    if (!JobById) return res.status(404).json({ message: "Job not found" });
-    res.status(200).json(JobById);
+    if (!jobById) {
+      return res.status(404).json({ message: "Job not found" });
+    }
+    res.status(200).json(jobById);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Update the job
+// Update the job by Id
 const UpdateJobById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -87,20 +95,22 @@ const UpdateJobById = async (req, res) => {
       new: true,
     });
 
-    res
-      .status(200)
-      .json({ message: "Job updated successfully", job: updatedJob });
+    res.status(200).json({ message: "Job updated successfully", job: updatedJob });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-//update the job
+// Delete the job by Id
 const DeleteJobById = async (req, res) => {
   try {
     const { id } = req.params;
-    const JobById = await AddJobModal.findByIdAndDelete(id);
-    if (!JobById) return res.status(404).json({ message: "Job not found" });
+    const jobById = await AddJobModal.findByIdAndDelete(id);
+
+    if (!jobById) {
+      return res.status(404).json({ message: "Job not found" });
+    }
+
     res.status(200).json({ message: "Job deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });

@@ -11,19 +11,25 @@ const addJobModalSchema = new mongoose.Schema({
     ref: "Service",
     required: true,
   },
-
-  Date: {
-    type: Date, //this will set later from calendly
-    default: new Date("2024-10-10T10:00:00"), // Static default date
-    required: false, // will overwrite it
+  date: {
+    type: Date,
+    required: true, // Date is required
+  },
+  startTime: {
+    type: Date, // Store start time as a date object
+    required: true, // Make this required
+  },
+  endTime: {
+    type: Date, // Store end time as a date object
+    required: true, // Make this required
   },
   country: {
     type: String,
-    required: true, // Optional, can be set later
+    required: true,
   },
   city: {
     type: String,
-    required: true, // Optional, can be set later
+    required: true,
   },
   description: {
     type: String, //used TEXT types for longer description
@@ -31,7 +37,7 @@ const addJobModalSchema = new mongoose.Schema({
   },
   referenceImage: {
     type: String, // Store URL or path to the image
-    required: false, //
+    required: false,
   },
   chargesPerHour: {
     type: Number,

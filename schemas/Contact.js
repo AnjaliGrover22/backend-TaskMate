@@ -14,7 +14,8 @@ const contactSchema = new mongoose.Schema({
     required: true,
   },
   uploadImage: {
-    type: String, // URL or path to the profile image
+    data: Buffer,
+    contentType: String,
   },
 });
 

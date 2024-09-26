@@ -18,6 +18,7 @@ const fAQRoute = require("./routes/fAQRoute"); // Import FAQ route
 const addJobRoutes = require("./routes/addJobModalRoute");
 const pintoDashboardRoutes = require("./routes/pintoDashboardRoute");
 const contactRoutes = require("./routes/contactRoute");
+const aIHelpCenterRoutes = require("./routes/aIHelpCenterRoute");
 
 connectDB();
 
@@ -52,6 +53,7 @@ app.use("/favourite", favouriteRoutes); // //Use the favourite routes
 app.use("/newJob", addJobRoutes); //Use the addNewJob routes
 app.use("/dashboard", pintoDashboardRoutes); //Use the dashboard routes
 app.use("/contact", contactRoutes); //Use the contact routes
+app.use("/aihelpcenter", aIHelpCenterRoutes); //Use the aihelpcenter routes
 
 app.listen(port, () =>
   console.log(`Server running on http://localhost:${port}`.bgGreen.black)

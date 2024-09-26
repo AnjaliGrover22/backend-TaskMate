@@ -1,47 +1,60 @@
-const axios = require("axios");
 const AIHelpCenter = require("../schemas/AIHelpCenter");
+const fetch = require("node-fetch");
 
-const openaiApiKey = process.env.OPENAI_API_KEY;
-
-const aIHelpCenterController = {
-  async getAIResponse(req, res) {
+exports.createChat = async (req, res) => {
+  try {
     const { message } = req.body;
+    const aiHelpCenter = new AIHelpCenter({
+      messages: [
+        { role: "system", content: "I am fine" },
+        { role: "user", content: message },
+        { role: "assistant", content: " assistant response" },
+      ],
+    });
+    await aiHelpCenter.save();
 
-    try {
-      const response = await axios.post(
-        "https://api.perplexity.ai/chat/completions",
-        {
-          model: "llama-3.1-sonar-large-128k-chat", // Use a valid model name
-          stream: true, // Enable streaming mode
-          max_tokens: 1024,
-          frequency_penalty: 1,
-          temperature: 0.0,
-          prompt: message,
-          max_tokens: 150,
-        },
-        {
-          headers: {
-            // OPENAI_API_KEY is sorted in .env
-            Authorization: `Bearer ${openaiApiKey}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+    const response = await fetchChatCompletion(aiHelpCenter.messages);
+    aiHelpCenter.messages.push({ role: "assistant", content: response });
+    await aiHelpCenter.save();
 
-      const aiResponse = response.data.choices[0].text.trim();
-
-      // Save the conversation to the database
-      await AIHelpCenter.create({ role: "user", content: message });
-      await AIHelpCenter.create({ role: "assistant", content: aiResponse });
-
-      res.json({ response: aiResponse });
-    } catch (error) {
-      console.error("Error with AI request:", error);
-      res
-        .status(500)
-        .json({ error: "An error occurred while processing your request." });
-    }
-  },
+    res.status(201).json(aiHelpCenter);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
-module.exports = aIHelpCenterController;
+exports.getChat = async (req, res) => {
+  try {
+    const aiHelpCenter = await AIHelpCenter.findById(req.params.id);
+    if (!aiHelpCenter) {
+      return res.status(404).json({ message: "Chat not found" });
+    }
+    res.json(aiHelpCenter);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+async function fetchChatCompletion(messages) {
+  const url = "https://api.perplexity.ai/chat/completions";
+  const apiKey = process.env.OPENAI_API_KEY;
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: "llama-3.1-sonar-large-128k-chat",
+      messages: messages,
+      max_tokens: 1024,
+      temperature: 0.0,
+      stream: true,
+    }),
+  });
+
+  const data = await response.json();
+  return data.choices[0].message.content;
+}

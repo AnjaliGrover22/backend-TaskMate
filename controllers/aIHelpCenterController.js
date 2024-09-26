@@ -39,22 +39,36 @@ async function fetchChatCompletion(messages) {
   const url = "https://api.perplexity.ai/chat/completions";
   const apiKey = process.env.OPENAI_API_KEY;
 
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model: "llama-3.1-sonar-large-128k-chat",
-      messages: messages,
-      max_tokens: 1024,
-      temperature: 0.0,
-      stream: true,
-    }),
-  });
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: "llama-3.1-sonar-large-128k-chat",
+        messages: messages,
+        max_tokens: 1024,
+        temperature: 0.0,
+        stream: false, // Changed from true to false
+      }),
+    });
 
-  const data = await response.json();
-  return data.choices[0].message.content;
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (!data.choices || data.choices.length === 0) {
+      throw new Error("No choices returned from the API");
+    }
+
+    return data.choices[0].message.content;
+  } catch (error) {
+    console.error("Error in fetchChatCompletion:", error);
+    return "I'm sorry, I couldn't process that request.";
+  }
 }

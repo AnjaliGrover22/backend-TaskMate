@@ -19,6 +19,7 @@ const addJobRoutes = require("./routes/addJobModalRoute");
 const pintoDashboardRoutes = require("./routes/pintoDashboardRoute");
 const contactRoutes = require("./routes/contactRoute");
 const aIHelpCenterRoutes = require("./routes/aIHelpCenterRoute");
+const helpByUsProfessionalRoutes = require("./routes/helpByUsProfessionalRoute");
 
 connectDB();
 
@@ -54,6 +55,7 @@ app.use("/newJob", addJobRoutes); //Use the addNewJob routes
 app.use("/dashboard", pintoDashboardRoutes); //Use the dashboard routes
 app.use("/contact", contactRoutes); //Use the contact routes
 app.use("/aihelpcenter", aIHelpCenterRoutes); //Use the aihelpcenter routes
+app.use("/helpbyusprofessional", helpByUsProfessionalRoutes); //Use the helpbyusprofessional routes
 
 app.listen(port, () =>
   console.log(`Server running on http://localhost:${port}`.bgGreen.black)

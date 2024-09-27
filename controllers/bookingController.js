@@ -134,3 +134,54 @@ exports.getProfessionalBookings = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.getProfessionalEarnings = async (req, res) => {
+  try {
+    const bookings = await Booking.find({ prof_id: req.params.profId })
+      .populate({
+        path: "addJobModel_id",
+        select: "chargesPerHour", // Ensure we only fetch the necessary field
+      })
+      .select("appointmentDateTime bookHr addJobModel_id");
+
+    // Check if bookings exist
+    if (!bookings.length) {
+      return res
+        .status(404)
+        .json({ message: "No bookings found for this professional" });
+    }
+
+    // Calculate earnings
+    const earningsByDate = bookings.reduce((acc, booking) => {
+      const date = new Date(booking.appointmentDateTime).toLocaleDateString(
+        "en-GB"
+      );
+
+      // Check if the related addJobModel exists and has a valid chargesPerHour field
+      const chargesPerHour = booking.addJobModel_id?.chargesPerHour;
+      if (chargesPerHour === undefined) {
+        console.warn(`Missing chargesPerHour for booking: ${booking._id}`);
+        return acc; // Skip this booking if chargesPerHour is missing
+      }
+
+      const earnings = chargesPerHour * booking.bookHr;
+
+      if (acc[date]) {
+        acc[date] += earnings;
+      } else {
+        acc[date] = earnings;
+      }
+
+      return acc;
+    }, {});
+
+    if (Object.keys(earningsByDate).length === 0) {
+      return res.status(404).json({ message: "No earnings data available" });
+    }
+
+    res.json(earningsByDate);
+  } catch (error) {
+    console.error("Error in getProfessionalEarnings:", error.message);
+    res.status(500).json({ message: error.message });
+  }
+};

@@ -9,6 +9,7 @@ const {
   deleteBooking,
   getCustomerBookings,
   getProfessionalBookings,
+  getProfessionalEarnings,
 } = require("../controllers/bookingController.js");
 
 const router = express.Router();
@@ -33,5 +34,7 @@ router.get("/customer/:custId", getCustomerBookings);
 
 // Get bookings for a specific professional
 router.get("/professional/:profId", getProfessionalBookings);
+
+router.get("/professional/:profId/earnings", getProfessionalEarnings);
 
 module.exports = router;

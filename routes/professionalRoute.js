@@ -9,7 +9,6 @@ const {
   getAllProfessionals,
   updateProfessional,
   uploadProfessionalImage,
-  getProfessionalProfile, // Add this new controller function
 } = require("../controllers/professionalController");
 
 const app = express.Router();
@@ -31,7 +30,5 @@ app.put("/:id", updateProfessional);
 
 app.route("/:id/uploadImage").put(upload.single("picture"), uploadProfessionalImage);
 
-// New route to fetch the profile of the logged-in professional
-app.get("/profile", requireAuth, getProfessionalProfile); // Ensure the user is authenticated
 
 module.exports = app;

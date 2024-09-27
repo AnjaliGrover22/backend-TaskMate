@@ -63,7 +63,7 @@ async function fetchChatCompletion(messages) {
         messages: messages,
         max_tokens: 1024,
         temperature: 0.0,
-        stream: false, // Changed from true to false
+        stream: true,
       }),
     });
 

@@ -4,7 +4,11 @@ const HelpByUsProfessional = require("../schemas/HelpByUsProfessional");
 const createHelpByUsProfessional = async (req, res) => {
   try {
     const { name, email, message } = req.body;
-    const newHelpByUsProfessional = new Help({ name, email, message });
+    const newHelpByUsProfessional = new HelpByUsProfessional({
+      name,
+      email,
+      message,
+    });
 
     if (req.file) {
       newHelpByUsProfessional.uploadImage = {
@@ -14,7 +18,7 @@ const createHelpByUsProfessional = async (req, res) => {
     }
 
     await newHelpByUsProfessional.save();
-    res.status(201).json({
+    res.status(200).json({
       message: "HelpByUsProfessional created successfully",
       helpByUsProfessional: newHelpByUsProfessional,
     });

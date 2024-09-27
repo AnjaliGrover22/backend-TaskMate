@@ -194,21 +194,7 @@ const uploadProfessionalImage = async (req, res) => {
   }
 };
 
-// Controller function to fetch the profile of the logged-in professional
-const getProfessionalProfile = async (req, res) => {
-  try {
-    // Find the professional by the authenticated user ID
-    const professional = await Professional.findById(req.user._id).select("-password"); // Exclude password
 
-    if (!professional) {
-      return res.status(404).json({ message: "Professional not found" });
-    }
-
-    res.status(200).json(professional);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching profile", error: error.message });
-  }
-};
 
 
 module.exports = {
@@ -218,5 +204,4 @@ module.exports = {
   getAllProfessionals,
   updateProfessional,
   uploadProfessionalImage,
-  getProfessionalProfile,
 };

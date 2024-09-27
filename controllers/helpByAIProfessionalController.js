@@ -10,7 +10,7 @@ exports.createChat = async (req, res) => {
 
     const helpByAIProfessional = new HelpByAIProfessional({
       messages: [
-        { role: "system", content: "I am fine" },
+        { role: "system", content: "Be precise and concise." },
         { role: "user", content: message },
       ],
     });

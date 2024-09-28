@@ -58,9 +58,13 @@ exports.getPinnedJobsByProf = async (req, res) => {
       return res.status(400).json({ message: "professionalId is required." });
     }
 
+    // Fetch the pinned jobs for the professional and populate the necessary fields
     const pinnedJobs = await PintoDashboard.find({ professionalId })
-      .populate("job_id") // Populate job details from AddJobModal
-      .populate("professionalId"); // Populate professional details from Professional schema
+      .populate({
+        path: "job_id",
+        populate: { path: "service_id" },  // This ensures that service details, including name, are populated
+      })
+      .populate("professionalId"); // Populate professional details
 
     res.status(200).json(pinnedJobs);
   } catch (error) {

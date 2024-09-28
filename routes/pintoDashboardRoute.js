@@ -6,9 +6,9 @@ const PintoDashboardController = require("../controllers/pintoDashboardControlle
 router.post("/", PintoDashboardController.createDashboard);
 
 // Unpin a job
-router.delete("/", PintoDashboardController.deleteDashboard);
+router.delete("/:professionalId/:job_id", PintoDashboardController.deleteDashboard);
 
 // Get all pinned jobs for a specific professional
-router.get("/:prof_id", PintoDashboardController.getPinnedJobsByProf);
+router.get("/:professionalId", PintoDashboardController.getPinnedJobsByProf);
 
 module.exports = router;

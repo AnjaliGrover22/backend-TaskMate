@@ -6,6 +6,7 @@ const {
   loginProfessional,
   signUpProfessional,
   getProfessionalById,
+  getProfessionalsByService,
   getAllProfessionals,
   updateProfessional,
   uploadProfessionalImage,
@@ -23,10 +24,7 @@ app.post("/signup", signUpProfessional);
 app.get("/:id", getProfessionalById);
 
 // Get Professionals by Service ID
-app.get(
-  "/byService/:serviceId",
-  professionalController.getProfessionalsByService
-);
+app.get("/services/:serviceId", getProfessionalsByService);
 
 // Get all Professionals
 app.get("/", getAllProfessionals);

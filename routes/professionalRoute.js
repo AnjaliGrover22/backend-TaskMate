@@ -22,13 +22,20 @@ app.post("/signup", signUpProfessional);
 // Get Professional by ID
 app.get("/:id", getProfessionalById);
 
+// Get Professionals by Service ID
+app.get(
+  "/byService/:serviceId",
+  professionalController.getProfessionalsByService
+);
+
 // Get all Professionals
 app.get("/", getAllProfessionals);
 
 // Update Professional
 app.put("/:id", updateProfessional);
 
-app.route("/:id/uploadImage").put(upload.single("picture"), uploadProfessionalImage);
-
+app
+  .route("/:id/uploadImage")
+  .put(upload.single("picture"), uploadProfessionalImage);
 
 module.exports = app;

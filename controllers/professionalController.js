@@ -111,6 +111,11 @@ const getProfessionalById = async (req, res) => {
 const getProfessionalsByService = async (req, res) => {
   try {
     const { serviceId } = req.params;
+    console.log("Received request params:", req.params);
+    if (!serviceId) {
+      return res.status(400).json({ message: "Service ID is required" });
+    }
+    console.log("Service ID:", req.params.serviceId);
     const professionals = await Professional.find({
       "jobProfile.skill": serviceId,
     })
@@ -118,7 +123,7 @@ const getProfessionalsByService = async (req, res) => {
       .populate("rating")
       .populate("jobProfile.skill")
       .exec();
-
+    console.log("professionals :", professionals);
     if (!professionals || professionals.length === 0) {
       return res
         .status(404)

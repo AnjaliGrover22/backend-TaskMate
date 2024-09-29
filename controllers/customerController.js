@@ -22,6 +22,7 @@ const loginCustomer = async (req, res) => {
       firstName: customer.firstName,
       profileImage: customer.profileImage,
       token,
+      id: token._id,
     });
   } catch (error) {
     res.status(400).json({ error: error.message });

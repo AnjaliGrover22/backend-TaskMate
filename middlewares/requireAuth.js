@@ -17,6 +17,7 @@ const requireAuth = async (req, res, next) => {
   try {
     // Verify the token
     const { _id } = jwt.verify(token, process.env.SECRET);
+    req.customerId = _id; // Attach customer ID to request object
 
     // Search for the user in the Customer collection
     const customer = await Customer.findById(_id).select("_id");

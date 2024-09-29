@@ -14,24 +14,27 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: async (req, file) => {
-    let folderName = "app";  // Default folder for general service image
+    let folderName = "app"; // Default folder for general service image
 
     // Check the field name to set the correct folder
-    if (file.fieldname.startsWith('description[imageDescription]')) {
-      folderName = 'app/imageDescription';  // Folder for images in imageDescription
-    } else if (file.fieldname === 'image') {
-      folderName = 'app';  // General service image goes to the 'app' folder
+    if (file.fieldname.startsWith("description[imageDescription]")) {
+      folderName = "app/imageDescription"; // Folder for images in imageDescription
+    } else if (file.fieldname === "image") {
+      folderName = "app"; // General service image goes to the 'app' folder
     }
 
     return {
-      folder: folderName,  // Cloudinary folder based on the field
-      allowed_formats: ["jpg", "png", "jpeg"],  // Allowed file formats
-      transformation: [{ width: 500, height: 500, crop: "limit" }]  // Optional resizing
+      folder: folderName, // Cloudinary folder based on the field
+      allowed_formats: ["jpg", "png", "jpeg"], // Allowed file formats
+      transformation: [{ width: 500, height: 500, crop: "limit" }], // Optional resizing
     };
   },
 });
 
 // Multer configuration for handling file uploads with Cloudinary storage
-const upload = multer({ storage: storage });
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 10 * 1024 * 1024 },
+});
 
 module.exports = upload;

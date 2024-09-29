@@ -6,6 +6,7 @@ const {
   loginProfessional,
   signUpProfessional,
   getProfessionalById,
+  getProfessionalsByService,
   getAllProfessionals,
   updateProfessional,
   uploadProfessionalImage,
@@ -22,13 +23,17 @@ app.post("/signup", signUpProfessional);
 // Get Professional by ID
 app.get("/:id", getProfessionalById);
 
+// Get Professionals by Service ID
+app.get("/services/:serviceId", getProfessionalsByService);
+
 // Get all Professionals
 app.get("/", getAllProfessionals);
 
 // Update Professional
 app.put("/:id", updateProfessional);
 
-app.route("/:id/uploadImage").put(upload.single("picture"), uploadProfessionalImage);
-
+app
+  .route("/:id/uploadImage")
+  .put(upload.single("picture"), uploadProfessionalImage);
 
 module.exports = app;

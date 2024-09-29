@@ -107,7 +107,7 @@ const getProfessionalById = async (req, res) => {
   }
 };
 
-// Get Professionals by Service
+// Get Professionals by ServiceId
 const getProfessionalsByService = async (req, res) => {
   try {
     const { serviceId } = req.params;

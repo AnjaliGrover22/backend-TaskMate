@@ -79,12 +79,16 @@ const getProfessionalsForServiceWithDetails = async (req, res) => {
 
     const jobs = await AddJobModal.find({ service_id: serviceId })
       .populate("service_id", "name")
-      .select("service_id country city chargesPerHour date startTime endTime");
+      .populate("professionalId", "firstName lastName profileImage")
+      .select(
+        "service_id country city  description chargesPerHour date startTime endTime "
+      );
 
     const response = jobs.map((job) => ({
       serviceName: job.service_id.name,
       country: job.country,
       city: job.city,
+      description: job.description,
       chargesPerHour: job.chargesPerHour,
       workingDate: job.date.toISOString().split("T")[0],
       workingTime: {

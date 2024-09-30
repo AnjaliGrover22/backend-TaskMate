@@ -79,7 +79,10 @@ const getProfessionalsForServiceWithDetails = async (req, res) => {
 
     const jobs = await AddJobModal.find({ service_id: serviceId })
       .populate("service_id", "name")
-      .populate("professionalId", "firstName lastName profileImage")
+      .populate(
+        "professionalId",
+        "firstName lastName profileImage averageRating"
+      )
       .select(
         "professionalId  service_id country city  description chargesPerHour date startTime endTime "
       );
@@ -88,6 +91,7 @@ const getProfessionalsForServiceWithDetails = async (req, res) => {
       profileImage: job.professionalId.profileImage,
       firstName: job.professionalId.firstName,
       lastName: job.professionalId.lastName,
+      averageRating: job.professionalId.averageRating,
       serviceName: job.service_id.name,
       country: job.country,
       city: job.city,

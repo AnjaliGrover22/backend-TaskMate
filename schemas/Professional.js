@@ -46,7 +46,10 @@ const professionalSchema = new mongoose.Schema({
     zipCode: {
       type: String,
     },
-    state: {
+    country: {
+      type: String,
+    },
+    city: {
       type: String,
     },
   },
@@ -71,8 +74,7 @@ const professionalSchema = new mongoose.Schema({
     },
     skill: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Service", // Reference to the Service schema
+        type: mongoose.Schema.Types.Mixed, // Allow both ObjectId and string
       },
     ],
     country: {
@@ -81,10 +83,12 @@ const professionalSchema = new mongoose.Schema({
     city: {
       type: String,
     },
-    paymentOption: {
-      type: String,
-      enum: ["cash", "credit", "bank transfer"],
-    },
+    paymentOption: [
+      {
+        type: String,
+        enum: ["bank", "paypal", "cash"],
+      },
+    ],
   },
 });
 
@@ -120,6 +124,7 @@ professionalSchema.statics.signup = async function (
       "Password must be at least 8 characters long, include one uppercase letter, one number, and one symbol"
     );
   }
+
   // Hash password
   const salt = await bcrypt.genSalt(10);
   const hash = await bcrypt.hash(password, salt);

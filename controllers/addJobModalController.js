@@ -1,4 +1,5 @@
 const AddJobModal = require("../schemas/AddJobModal");
+const mongoose = require("mongoose");
 
 // Create new job listing (only for professionals)
 const createNewJob = async (req, res) => {
@@ -67,7 +68,7 @@ const getJobsByProfessional = async (req, res) => {
   }
 };
 
-// Get professionals by serviceId
+// Get professionals deatils by serviceId
 const getProfessionalsForServiceWithDetails = async (req, res) => {
   try {
     const { serviceId } = req.params;

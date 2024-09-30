@@ -106,6 +106,49 @@ const getProfessionalById = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+// Get Professionals by ServiceId
+const getProfessionalsByService = async (req, res) => {
+  try {
+    const { serviceId } = req.params;
+    console.log("Received request params:", req.params);
+    if (!serviceId) {
+      return res.status(400).json({ message: "Service ID is required" });
+    }
+    console.log("Service ID:", req.params.serviceId);
+    const professionals = await Professional.find({
+      "jobProfile.skill": serviceId,
+    })
+      .select("-password")
+      .populate("rating")
+      .populate("jobProfile.skill")
+      .exec();
+    console.log("professionals :", professionals);
+    if (!professionals || professionals.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "No professionals found for this service" });
+    }
+
+    // Calculate average rating for each professional
+    professionals.forEach((professional) => {
+      if (professional.rating.length > 0) {
+        const totalRating = professional.rating.reduce(
+          (sum, feedback) => sum + feedback.rating,
+          0
+        );
+        professional.averageRating = totalRating / professional.rating.length;
+      } else {
+        professional.averageRating = 0;
+      }
+    });
+
+    res.status(200).json(professionals);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 // Get all Professionals
 const getAllProfessionals = async (req, res) => {
   try {
@@ -198,6 +241,7 @@ module.exports = {
   loginProfessional,
   signUpProfessional,
   getProfessionalById,
+  getProfessionalsByService,
   getAllProfessionals,
   updateProfessional,
   uploadProfessionalImage,

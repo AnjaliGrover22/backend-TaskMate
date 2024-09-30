@@ -46,7 +46,10 @@ const customerSchema = new mongoose.Schema({
     zipCode: {
       type: String,
     },
-    state: {
+    country: {
+      type: String,
+    },
+    city: {
       type: String,
     },
   },

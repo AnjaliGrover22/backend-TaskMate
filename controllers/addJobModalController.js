@@ -1,14 +1,27 @@
 const AddJobModal = require("../schemas/AddJobModal");
+const mongoose = require("mongoose");
 
 // Create new job listing (only for professionals)
 const createNewJob = async (req, res) => {
   try {
     // Ensure the user is a professional
     if (req.user.type !== "professional") {
-      return res.status(403).json({ message: "Access denied: Not a professional" });
+      return res
+        .status(403)
+        .json({ message: "Access denied: Not a professional" });
     }
 
-    const { categoryId, service_id, date, startTime, endTime, country, city, description, chargesPerHour } = req.body;
+    const {
+      categoryId,
+      service_id,
+      date,
+      startTime,
+      endTime,
+      country,
+      city,
+      description,
+      chargesPerHour,
+    } = req.body;
 
     // Check if an image was uploaded
     let referenceImage = req.file ? req.file.path : null;
@@ -39,7 +52,9 @@ const getJobsByProfessional = async (req, res) => {
   try {
     // Ensure the user is a professional
     if (req.user.type !== "professional") {
-      return res.status(403).json({ message: "Access denied: Not a professional" });
+      return res
+        .status(403)
+        .json({ message: "Access denied: Not a professional" });
     }
 
     // Find jobs created by this professional
@@ -50,6 +65,37 @@ const getJobsByProfessional = async (req, res) => {
     res.status(200).json(jobs);
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+// Get professionals deatils by serviceId
+const getProfessionalsForServiceWithDetails = async (req, res) => {
+  try {
+    const { serviceId } = req.params;
+
+    if (!serviceId || !mongoose.Types.ObjectId.isValid(serviceId)) {
+      return res.status(400).json({ error: "Invalid service ID" });
+    }
+
+    const jobs = await AddJobModal.find({ service_id: serviceId })
+      .populate("service_id", "name")
+      .select("service_id country city chargesPerHour date startTime endTime");
+
+    const response = jobs.map((job) => ({
+      serviceName: job.service_id.name,
+      country: job.country,
+      city: job.city,
+      chargesPerHour: job.chargesPerHour,
+      workingDate: job.date.toISOString().split("T")[0],
+      workingTime: {
+        start: job.startTime.toTimeString().split(" ")[0],
+        end: job.endTime.toTimeString().split(" ")[0],
+      },
+    }));
+
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -92,9 +138,13 @@ const updateJobById = async (req, res) => {
       referenceImage, // Update the reference image if provided
     };
 
-    const updatedJob = await AddJobModal.findByIdAndUpdate(id, updateData, { new: true });
+    const updatedJob = await AddJobModal.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
 
-    res.status(200).json({ message: "Job updated successfully", job: updatedJob });
+    res
+      .status(200)
+      .json({ message: "Job updated successfully", job: updatedJob });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -120,6 +170,7 @@ const deleteJobById = async (req, res) => {
 module.exports = {
   createNewJob,
   getJobsByProfessional,
+  getProfessionalsForServiceWithDetails,
   getOneJobById,
   updateJobById,
   deleteJobById,

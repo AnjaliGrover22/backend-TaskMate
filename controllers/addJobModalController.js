@@ -85,15 +85,19 @@ const getProfessionalsForServiceWithDetails = async (req, res) => {
       );
 
     const response = jobs.map((job) => ({
+      profileImage: job.profileImage,
+      firstName: job.firstName,
+      lastName: job.lastName,
       serviceName: job.service_id.name,
       country: job.country,
       city: job.city,
       description: job.description,
       chargesPerHour: job.chargesPerHour,
       workingDate: job.date.toISOString().split("T")[0],
+      // We then use the slice(0, 5) method to extract only the first 5 characters of the time string, which corresponds to the hours and minutes in the format "HH:MM".
       workingTime: {
-        start: job.startTime.toTimeString().split(" ")[0],
-        end: job.endTime.toTimeString().split(" ")[0],
+        start: job.startTime.toTimeString().split(0, 5),
+        end: job.endTime.toTimeString().split(0, 5),
       },
     }));
 

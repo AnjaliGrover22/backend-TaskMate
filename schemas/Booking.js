@@ -25,8 +25,10 @@ const bookingSchema = new mongoose.Schema({
   addJobModel_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "AddJobModal",
-    required: true,
   },
+  startTime: { type: Time, required: true },
+  endtTime: { type: Time, required: true },
+  desciption: { type: String, required: true },
   // Status of the booking (pending, confirmed, or cancelled)
   status: {
     type: String,
@@ -36,17 +38,17 @@ const bookingSchema = new mongoose.Schema({
   // Information for bookings made on behalf of someone else
   bookingForOthers: {
     // Name of the person for whom the booking is made
-    name: { type: String, required: true },
+    name: { type: String },
     // Address details of the person
     address: {
-      street: { type: String, required: true },
-      city: { type: String, required: true },
-      state: { type: String, required: true },
-      zipcode: { type: String, required: true },
+      street: { type: String },
+      city: { type: String },
+      state: { type: String },
+      zipcode: { type: String },
     },
     // Contact information for the person
-    phoneNumber: { type: String, required: true },
-    email: { type: String, required: true },
+    phoneNumber: { type: String },
+    email: { type: String },
   },
 });
 

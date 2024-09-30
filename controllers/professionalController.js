@@ -194,9 +194,6 @@ const uploadProfessionalImage = async (req, res) => {
   }
 };
 
-
-
-
 module.exports = {
   loginProfessional,
   signUpProfessional,

@@ -74,8 +74,10 @@ const professionalSchema = new mongoose.Schema({
     },
     skill: [
       {
-        type: mongoose.Schema.Types.Mixed, // Allow both ObjectId and string
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Service", // Change this to the correct model
       },
+      String, // Allow string directly if you want to keep it
     ],
     country: {
       type: String,

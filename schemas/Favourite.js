@@ -1,4 +1,3 @@
-// schemas/Favourite.js
 const mongoose = require("mongoose");
 
 const favouriteSchema = new mongoose.Schema({
@@ -12,9 +11,9 @@ const favouriteSchema = new mongoose.Schema({
     ref: "Professional",
     required: true,
   },
-  service_id: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Service",
+  jobId: {
+    type: mongoose.Schema.Types.ObjectId, // Referencing the Job ID from your job schema
+    ref: "AddJobModal",
     required: true,
   },
 });

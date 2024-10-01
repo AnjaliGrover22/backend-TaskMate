@@ -8,7 +8,7 @@ const favouriteController = require("../controllers/favouriteController");
 router.post("/", favouriteController.addFavourite);
 
 // Get favourite by ID
-router.get("/:id", favouriteController.getFavouriteById);
+router.get("/:id", favouriteController.getFavouriteById);  
 
 // Get all favourites
 router.get("/", favouriteController.getAllFavourites);
@@ -17,18 +17,12 @@ router.get("/", favouriteController.getAllFavourites);
 router.get("/customer/:custId", favouriteController.getFavouritesByCustomer);
 
 // Check if a professional is favourited by a customer
-router.get("/check/:custId/:profId", favouriteController.checkFavourite);
+router.get("/check/:custId/:profId/:service_id", favouriteController.checkFavourite);
 
-// Remove a favourite by custId or Prof Id
-//router.delete("/:custId/:profId", favouriteController.removeFavourite);
-
-//Remove a favourite
+// Remove a favourite by ID
 router.delete("/:id", favouriteController.removeFavourite);
 
 // Get all customers who have favourited a professional
-router.get(
-  "/professional/:profId/customers",
-  favouriteController.getCustomersForProfessional
-);
+router.get("/professional/:profId/customers", favouriteController.getCustomersForProfessional);
 
 module.exports = router;

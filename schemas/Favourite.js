@@ -1,3 +1,4 @@
+// schemas/Favourite.js
 const mongoose = require("mongoose");
 
 const favouriteSchema = new mongoose.Schema({
@@ -9,6 +10,11 @@ const favouriteSchema = new mongoose.Schema({
   prof_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Professional",
+    required: true,
+  },
+  service_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Service",
     required: true,
   },
 });

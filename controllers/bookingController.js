@@ -134,7 +134,9 @@ exports.getCustomerBookings = async (req, res) => {
 
     const formattedBookings = bookings.map((booking) => ({
       id: booking._id,
-      professionalName: booking.prof_id?.name || "N/A",
+      professionalName: booking.prof_id
+        ? `${booking.prof_id.firstName} ${booking.prof_id.lastName}`.trim()
+        : "N/A",
       serviceName: booking.service_id?.name || "N/A",
       appointmentDate: booking.appointmentDateTime
         ? new Date(booking.appointmentDateTime).toDateString()

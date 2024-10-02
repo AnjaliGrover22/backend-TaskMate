@@ -25,6 +25,7 @@ const bookingSchema = new mongoose.Schema({
   addJobModel_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "AddJobModal",
+    required: true,
   },
   startTime: { type: Date, required: true },
   endTime: { type: Date, required: true },

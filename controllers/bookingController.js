@@ -43,7 +43,8 @@ exports.getAllBookings = async (req, res) => {
     const bookings = await Booking.find()
       .populate("cust_id", "name email")
       .populate("prof_id", "name email")
-      .populate("service_id", "name price");
+      .populate("service_id", "name price")
+      .populate("addJobModel_id");
     res.json(bookings);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -56,7 +57,8 @@ exports.getBookingById = async (req, res) => {
     const booking = await Booking.findById(req.params.id)
       .populate("cust_id", "name email")
       .populate("prof_id", "name email")
-      .populate("service_id", "name price");
+      .populate("service_id", "name price")
+      .populate("addJobModel_id");
     if (!booking) return res.status(404).json({ message: "Booking not found" });
     res.json(booking);
   } catch (error) {
@@ -126,7 +128,8 @@ exports.getProfessionalBookings = async (req, res) => {
   try {
     const bookings = await Booking.find({ prof_id: req.params.profId })
       .populate("cust_id", "name email")
-      .populate("service_id", "name price");
+      .populate("service_id", "name price")
+      .populate("addJobModel_id");
     if (!bookings)
       return res.status(404).json({ message: "Booking not found" });
     res.json(bookings);

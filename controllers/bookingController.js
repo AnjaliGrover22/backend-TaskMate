@@ -189,6 +189,26 @@ exports.getProfessionalEarnings = async (req, res) => {
   }
 };
 
+const formatTimeRange = (startTime, endTime) => {
+  if (!startTime || !endTime) return "N/A";
+
+  const formatTime = (time) => {
+    const date = new Date(time);
+    return date
+      .toLocaleString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      })
+      .replace(",", "");
+  };
+
+  const formattedStart = formatTime(startTime);
+  const formattedEnd = formatTime(endTime);
+
+  return `${formattedStart} - ${formattedEnd}`;
+};
+
 //Get bookings cards for a specific customer
 exports.getCustomerBookingscards = async (req, res) => {
   try {
@@ -223,12 +243,7 @@ exports.getCustomerBookingscards = async (req, res) => {
       appointmentDate: booking.appointmentDateTime
         ? new Date(booking.appointmentDateTime).toDateString()
         : "N/A",
-      schedule:
-        booking.startTime && booking.endTime
-          ? `${new Date(booking.startTime).toLocaleTimeString()} - ${new Date(
-              booking.endTime
-            ).toLocaleTimeString()}`
-          : "N/A",
+      schedule: formatTimeRange(booking.startTime, booking.endTime),
       bookingHours: booking.bookHr,
       status: booking.status,
       description: booking.description,

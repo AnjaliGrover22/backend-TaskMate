@@ -74,7 +74,6 @@ const signUpProfessional = async (req, res) => {
   }
 };
 
-// Get Professional by ID
 const getProfessionalById = async (req, res) => {
   const { id } = req.params;
 
@@ -84,25 +83,33 @@ const getProfessionalById = async (req, res) => {
 
   try {
     const professional = await Professional.findById(id)
-      .populate("rating")
-      .populate("jobProfile.skill")
+      .populate("rating") // Populating ratings
+      .populate({
+        path: "jobProfile.skill", // Populating skill
+        select: "name image", // Selecting only name and image fields from Service
+      })
       .exec();
+
+    console.log("Populated Professional:", professional); // Log populated professional
 
     if (!professional) {
       return res.status(404).json({ error: "Professional not found" });
     }
 
     // Calculate average rating
-    if (professional.rating.length > 0) {
+    if (professional.rating && professional.rating.length > 0) {
       const totalRating = professional.rating.reduce(
         (sum, feedback) => sum + feedback.rating,
         0
       );
       professional.averageRating = totalRating / professional.rating.length;
+    } else {
+      professional.averageRating = 0; // Set default average rating
     }
 
     res.status(200).json(professional);
   } catch (error) {
+    console.error("Error fetching professional:", error); // Log error
     res.status(500).json({ error: error.message });
   }
 };

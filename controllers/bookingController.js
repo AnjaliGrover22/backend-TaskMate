@@ -189,7 +189,7 @@ exports.getProfessionalEarnings = async (req, res) => {
   }
 };
 
-//Get bookings for a specific customer
+//Get bookings cards for a specific customer
 exports.getCustomerBookingscards = async (req, res) => {
   try {
     const customerId = req.params.customerId;

@@ -122,7 +122,7 @@ exports.getCustomerBookings = async (req, res) => {
       { cust_id: customerId },
       "prof_id service_id appointmentDateTime startTime endTime bookHr status description"
     )
-      .populate("prof_id", "name")
+      .populate("prof_id", "firstName lastName")
       .populate("service_id", "name")
       .lean();
 

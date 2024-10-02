@@ -109,7 +109,7 @@ exports.deleteBooking = async (req, res) => {
 };
 
 // Get bookings for a specific customer
-exports.getCustomerBookings = async (req, res) => {
+exports.getCustomerBookingscards = async (req, res) => {
   try {
     const customerId = req.params.customerId;
 
@@ -120,7 +120,7 @@ exports.getCustomerBookings = async (req, res) => {
 
     const bookings = await Booking.find(
       { cust_id: customerId },
-      "prof_id service_id appointmentDateTime startTime endTime bookHr status description"
+      "prof_id service_id appointmentDateTime startTime endTime bookHr status"
     )
       .populate("prof_id", "profileImage firstName lastName ")
       .populate("service_id", "name")

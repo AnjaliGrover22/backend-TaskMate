@@ -49,7 +49,11 @@ exports.getFavouritesByCustomer = async (req, res) => {
       cust_id: req.params.custId,
     })
       .populate("prof_id", "firstName lastName profileImage city country chargesPerHour averageRating")
-      .populate("jobId", "description date startTime endTime");
+      .populate("jobId", "description date startTime endTime city country chargesPerHour")
+      .populate({
+        path: 'jobId',
+        populate: { path: 'service_id', select: 'name' }
+      });
     res.json(favourites);
   } catch (error) {
     res.status(500).json({ message: error.message });

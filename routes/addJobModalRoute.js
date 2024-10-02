@@ -30,7 +30,7 @@ addJobrouter.get(
 );
 
 // Route to get a single job by its ID
-addJobrouter.get("/:id", requireAuth, getOneJobById);
+addJobrouter.get("/:id", getOneJobById);
 
 // Route to update a job by its ID
 addJobrouter.put(

@@ -90,8 +90,6 @@ const getProfessionalById = async (req, res) => {
       })
       .exec();
 
-    console.log("Populated Professional:", professional); // Log populated professional
-
     if (!professional) {
       return res.status(404).json({ error: "Professional not found" });
     }
@@ -118,7 +116,6 @@ const getProfessionalById = async (req, res) => {
 const getProfessionalsByService = async (req, res) => {
   try {
     const { serviceId } = req.params;
-    console.log("Received request params:", req.params);
     if (!serviceId) {
       return res.status(400).json({ message: "Service ID is required" });
     }

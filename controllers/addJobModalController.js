@@ -88,6 +88,7 @@ const getProfessionalsForServiceWithDetails = async (req, res) => {
       );
 
     const response = jobs.map((job) => ({
+      jobId: job._id,
       professionalId: job.professionalId._id,
       profileImage: job.professionalId.profileImage,
       firstName: job.professionalId.firstName,

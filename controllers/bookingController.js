@@ -122,7 +122,7 @@ exports.getCustomerBookings = async (req, res) => {
       { cust_id: customerId },
       "prof_id service_id appointmentDateTime startTime endTime bookHr status description"
     )
-      .populate("prof_id", "firstName lastName")
+      .populate("prof_id", "profileImage firstName lastName ")
       .populate("service_id", "name")
       .lean();
 
@@ -134,6 +134,7 @@ exports.getCustomerBookings = async (req, res) => {
 
     const formattedBookings = bookings.map((booking) => ({
       id: booking._id,
+      profileImage: booking.prof_id?.profileImage || "N/A",
       professionalName: booking.prof_id
         ? `${booking.prof_id.firstName} ${booking.prof_id.lastName}`.trim()
         : "N/A",

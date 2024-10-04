@@ -113,9 +113,9 @@ exports.deleteBooking = async (req, res) => {
 exports.getCustomerBookings = async (req, res) => {
   try {
     const bookings = await Booking.find({ cust_id: req.params.custId })
-      .populate("prof_id", "name email")
+      .populate("prof_id", "profileImage firstName lastName email ")
       .populate("service_id", "name price")
-      .populate("addJobModel_id");
+      .populate("addJobModel_id", "date");
     if (!bookings)
       return res.status(404).json({ message: "Booking not found" });
     res.json(bookings);
@@ -129,7 +129,7 @@ exports.getProfessionalBookings = async (req, res) => {
     const bookings = await Booking.find({ prof_id: req.params.profId })
       .populate("cust_id", "name email")
       .populate("service_id", "name price")
-      .populate("addJobModel_id");
+      .populate("addJobModel_id", "date");
     if (!bookings)
       return res.status(404).json({ message: "Booking not found" });
     res.json(bookings);
@@ -255,5 +255,70 @@ const formatTimeRange = (startTime, endTime) => {
 //     res
 //       .status(500)
 //       .json({ message: "Error fetching bookings", error: error.message });
+//   }
+// };
+
+// update customer booking
+
+// exports.updateCustomerBooking = async (req, res) => {
+//   try {
+//     const bookingId = req.params.bookingId;
+//     const { serviceId, appointmentDate, startTime, endTime, bookHr } = req.body;
+
+//     // Validate bookingId
+//     if (!mongoose.Types.ObjectId.isValid(bookingId)) {
+//       return res.status(400).json({ message: "Invalid booking ID" });
+//     }
+
+//     // Find the booking
+//     const booking = await Booking.findById(bookingId);
+
+//     if (!booking) {
+//       return res.status(404).json({ message: "Booking not found" });
+//     }
+
+//     // Update fields if provided
+//     if (serviceId) booking.service_id = serviceId;
+//     if (appointmentDate)
+//       booking.appointmentDateTime = new Date(appointmentDate);
+//     if (startTime) booking.startTime = startTime;
+//     if (endTime) booking.endTime = endTime;
+//     if (bookHr) booking.bookHr = bookHr;
+
+//     // Save the updated booking
+//     await booking.save();
+
+//     // Fetch the updated booking with populated fields
+//     const updatedBooking = await Booking.findById(bookingId)
+//       .populate("prof_id", "profileImage firstName lastName")
+//       .populate("service_id", "name")
+//       .lean();
+
+//     // Format the response
+//     const formattedBooking = {
+//       id: updatedBooking._id,
+//       profileImage: updatedBooking.prof_id?.profileImage || "N/A",
+//       professionalName: updatedBooking.prof_id
+//         ? `${updatedBooking.prof_id.firstName} ${updatedBooking.prof_id.lastName}`.trim()
+//         : "N/A",
+//       serviceName: updatedBooking.service_id?.name || "N/A",
+//       appointmentDate: updatedBooking.appointmentDateTime
+//         ? new Date(updatedBooking.appointmentDateTime).toDateString()
+//         : "N/A",
+//       schedule: formatTimeRange(
+//         updatedBooking.startTime,
+//         updatedBooking.endTime
+//       ),
+//       bookingHours: updatedBooking.bookHr,
+//       status: updatedBooking.status,
+//       description: updatedBooking.description,
+//     };
+
+//     res.json(formattedBooking);
+//   } catch (error) {
+//     console.error("Error updating booking:", error);
+//     res
+//       .status(500)
+//       .json({ message: "Error updating booking", error: error.message });
 //   }
 // };

@@ -210,50 +210,50 @@ const formatTimeRange = (startTime, endTime) => {
 };
 
 //Get bookings cards for a specific customer
-exports.getCustomerBookingscards = async (req, res) => {
-  try {
-    const customerId = req.params.customerId;
+// exports.getCustomerBookingscards = async (req, res) => {
+//   try {
+//     const customerId = req.params.customerId;
 
-    // Validate customerId
-    if (!mongoose.Types.ObjectId.isValid(customerId)) {
-      return res.status(400).json({ message: "Invalid customer ID" });
-    }
+//     // Validate customerId
+//     if (!mongoose.Types.ObjectId.isValid(customerId)) {
+//       return res.status(400).json({ message: "Invalid customer ID" });
+//     }
 
-    const bookings = await Booking.find(
-      { cust_id: customerId },
-      "prof_id service_id appointmentDateTime startTime endTime bookHr status"
-    )
-      .populate("prof_id", "profileImage firstName lastName ")
-      .populate("service_id", "name")
-      .lean();
+//     const bookings = await Booking.find(
+//       { cust_id: customerId },
+//       "prof_id service_id appointmentDateTime startTime endTime bookHr status"
+//     )
+//       .populate("prof_id", "profileImage firstName lastName ")
+//       .populate("service_id", "name")
+//       .lean();
 
-    if (!bookings || bookings.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No bookings found for this customer" });
-    }
+//     if (!bookings || bookings.length === 0) {
+//       return res
+//         .status(404)
+//         .json({ message: "No bookings found for this customer" });
+//     }
 
-    const formattedBookings = bookings.map((booking) => ({
-      id: booking._id,
-      profileImage: booking.prof_id?.profileImage || "N/A",
-      professionalName: booking.prof_id
-        ? `${booking.prof_id.firstName} ${booking.prof_id.lastName}`.trim()
-        : "N/A",
-      serviceName: booking.service_id?.name || "N/A",
-      appointmentDate: booking.appointmentDateTime
-        ? new Date(booking.appointmentDateTime).toDateString()
-        : "N/A",
-      schedule: formatTimeRange(booking.startTime, booking.endTime),
-      bookingHours: booking.bookHr,
-      status: booking.status,
-      description: booking.description,
-    }));
+//     const formattedBookings = bookings.map((booking) => ({
+//       id: booking._id,
+//       profileImage: booking.prof_id?.profileImage || "N/A",
+//       professionalName: booking.prof_id
+//         ? `${booking.prof_id.firstName} ${booking.prof_id.lastName}`.trim()
+//         : "N/A",
+//       serviceName: booking.service_id?.name || "N/A",
+//       appointmentDate: booking.appointmentDateTime
+//         ? new Date(booking.appointmentDateTime).toDateString()
+//         : "N/A",
+//       schedule: formatTimeRange(booking.startTime, booking.endTime),
+//       bookingHours: booking.bookHr,
+//       status: booking.status,
+//       description: booking.description,
+//     }));
 
-    res.json(formattedBookings);
-  } catch (error) {
-    console.error("Error fetching bookings:", error);
-    res
-      .status(500)
-      .json({ message: "Error fetching bookings", error: error.message });
-  }
-};
+//     res.json(formattedBookings);
+//   } catch (error) {
+//     console.error("Error fetching bookings:", error);
+//     res
+//       .status(500)
+//       .json({ message: "Error fetching bookings", error: error.message });
+//   }
+// };

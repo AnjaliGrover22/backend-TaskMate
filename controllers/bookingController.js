@@ -112,7 +112,7 @@ exports.deleteBooking = async (req, res) => {
 // Get bookings for a specific customer
 exports.getCustomerBookings = async (req, res) => {
   try {
-    const bookings = await Booking.find({ cust_id: req.params.custId })
+    const bookings = await Booking.find({ cust_id: req.params.customerId })
       .populate("prof_id", "profileImage firstName lastName email ")
       .populate("service_id", "name price")
       .populate("addJobModel_id", "date");

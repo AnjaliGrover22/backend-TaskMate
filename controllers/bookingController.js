@@ -16,8 +16,10 @@ const isValidUTCISODateString = (dateString) => {
 // Create a new booking
 exports.createBooking = async (req, res) => {
   try {
-    const { appointmentDateTime, ...otherFields } = req.body;
+    const { appointmentDateTime, startTime, endTime, ...otherFields } =
+      req.body;
 
+    // Check if appointmentDateTime is a valid UTC ISO date string
     if (!isValidUTCISODateString(appointmentDateTime)) {
       return res.status(400).json({
         message:
@@ -25,11 +27,33 @@ exports.createBooking = async (req, res) => {
       });
     }
 
+    // Convert startTime and endTime to Date objects
+    const start = new Date(startTime);
+    const end = new Date(endTime);
+
+    // Validate that startTime is less than endTime
+    if (start >= end) {
+      return res.status(400).json({
+        message: "Start time must be earlier than end time.",
+      });
+    }
+
+    // Calculate the booking hours (difference between end and start in hours)
+    const bookingHours = (end - start) / (1000 * 60 * 60); // Difference in milliseconds, convert to hours
+
+    // Round the booking hours to the nearest integer
+    const roundedBookingHours = Math.round(bookingHours);
+
+    // Create a new booking object
     const newBooking = new Booking({
       ...otherFields,
       appointmentDateTime: new Date(appointmentDateTime),
+      startTime: start,
+      endTime: end,
+      bookHr: roundedBookingHours, // Set the rounded booking hours
     });
 
+    // Save the booking
     const savedBooking = await newBooking.save();
     res.status(201).json(savedBooking);
   } catch (error) {
@@ -69,8 +93,10 @@ exports.getBookingById = async (req, res) => {
 // Update a booking
 exports.updateBooking = async (req, res) => {
   try {
-    const { appointmentDateTime, ...otherFields } = req.body;
+    const { appointmentDateTime, startTime, endTime, ...otherFields } =
+      req.body;
 
+    // Validate appointmentDateTime if provided
     if (appointmentDateTime && !isValidUTCISODateString(appointmentDateTime)) {
       return res.status(400).json({
         message:
@@ -78,20 +104,53 @@ exports.updateBooking = async (req, res) => {
       });
     }
 
-    const updateData = {
+    // Prepare the update data object
+    let updateData = {
       ...otherFields,
       ...(appointmentDateTime && {
         appointmentDateTime: new Date(appointmentDateTime),
       }),
     };
 
+    // If startTime and endTime are provided, validate and calculate the booking hours
+    if (startTime && endTime) {
+      const start = new Date(startTime);
+      const end = new Date(endTime);
+
+      // Ensure start time is before end time
+      if (start >= end) {
+        return res.status(400).json({
+          message: "Start time must be earlier than end time.",
+        });
+      }
+
+      // Calculate booking hours
+      const bookingHours = (end - start) / (1000 * 60 * 60); // Convert milliseconds to hours
+      const roundedBookingHours = Math.round(bookingHours); // Round to nearest hour
+
+      // Add startTime, endTime, and bookHr to the updateData
+      updateData = {
+        ...updateData,
+        startTime: start,
+        endTime: end,
+        bookHr: roundedBookingHours,
+      };
+    }
+
+    // Update the booking in the database
     const updatedBooking = await Booking.findByIdAndUpdate(
       req.params.id,
       updateData,
-      { new: true }
+      {
+        new: true, // Return the updated document
+      }
     );
-    if (!updatedBooking)
+
+    if (!updatedBooking) {
       return res.status(404).json({ message: "Booking not found" });
+    }
+
+    // Return the updated booking
     res.json(updatedBooking);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -207,4 +266,58 @@ const formatTimeRange = (startTime, endTime) => {
   const formattedEnd = formatTime(endTime);
 
   return `${formattedStart} - ${formattedEnd}`;
+};
+
+//Get bookings cards for a specific customer
+exports.getCustomerBookingscards = async (req, res) => {
+  try {
+    const customerId = req.params.customerId;
+
+    // Validate customerId
+    if (!mongoose.Types.ObjectId.isValid(customerId)) {
+      return res.status(400).json({ message: "Invalid customer ID" });
+    }
+
+    const bookings = await Booking.find(
+      { cust_id: customerId },
+      "prof_id service_id appointmentDateTime startTime endTime bookHr status"
+    )
+      .populate("prof_id", "profileImage firstName lastName _id")
+      .populate("service_id", "name")
+      .populate("addJobModel_id", "date")
+      .lean();
+
+    if (!bookings || bookings.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No bookings found for this customer" });
+    }
+
+    const formattedBookings = bookings.map((booking) => ({
+      id: booking._id,
+      profileImage: booking.prof_id?.profileImage || "N/A",
+      profId: booking.prof_id?._id || "N/A", // Ensure profId is mapped correctly
+      professionalName: booking.prof_id
+        ? `${booking.prof_id.firstName} ${booking.prof_id.lastName}`.trim()
+        : "N/A",
+      serviceName: booking.service_id?.name || "N/A",
+      appointmentDate: booking.appointmentDateTime
+        ? new Date(booking.appointmentDateTime).toDateString()
+        : "N/A",
+      schedule: formatTimeRange(booking.startTime, booking.endTime),
+      date: booking.addJobModel_id.date
+        ? new Date(booking.addJobModel_id.date).toDateString()
+        : "N/A",
+      bookingHours: booking.bookHr,
+      status: booking.status,
+      description: booking.description,
+    }));
+
+    res.json(formattedBookings);
+  } catch (error) {
+    console.error("Error fetching bookings:", error);
+    res
+      .status(500)
+      .json({ message: "Error fetching bookings", error: error.message });
+  }
 };

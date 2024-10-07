@@ -60,8 +60,11 @@ const getJobsByProfessional = async (req, res) => {
     // Find jobs created by this professional
     const jobs = await AddJobModal.find({ professionalId: req.user._id })
       .populate("categoryId")
-      .populate("service_id");
-
+      .populate("service_id")
+      .populate(
+        "professionalId",
+        "firstName lastName profileImage averageRating"
+      );
     res.status(200).json(jobs);
   } catch (error) {
     res.status(500).json({ message: error.message });

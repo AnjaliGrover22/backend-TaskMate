@@ -27,9 +27,22 @@ const bookingSchema = new mongoose.Schema({
     ref: "AddJobModal",
     required: true,
   },
-  startTime: { type: Date, required: true },
-  endTime: { type: Date, required: true },
-  description: { type: String, required: true },
+
+  startTime: {
+    type: Date,
+    required: true,
+  },
+
+  endTime: {
+    type: Date,
+    required: true,
+  },
+
+  description: {
+    type: String,
+    required: true,
+  },
+
   // Status of the booking (pending, confirmed, or cancelled)
   status: {
     type: String,

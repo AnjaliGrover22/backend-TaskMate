@@ -47,7 +47,7 @@ const createNewJob = async (req, res) => {
   }
 };
 
-// Get jobs for the logged-in professional
+/// Get jobs for the logged-in professional
 const getJobsByProfessional = async (req, res) => {
   try {
     // Ensure the user is a professional
@@ -57,16 +57,18 @@ const getJobsByProfessional = async (req, res) => {
         .json({ message: "Access denied: Not a professional" });
     }
 
-    // Find jobs created by this professional
+    // Find jobs created by this professional and populate related fields
     const jobs = await AddJobModal.find({ professionalId: req.user._id })
-      .populate("categoryId")
-      .populate("service_id");
+      .populate("categoryId")  // Populates the category details
+      .populate("service_id")  // Populates the service details
+      .populate("professionalId", "firstName lastName profileImage");  // Populates the professional's details
 
     res.status(200).json(jobs);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 // Get professionals deatils by serviceId
 const getProfessionalsForServiceWithDetails = async (req, res) => {

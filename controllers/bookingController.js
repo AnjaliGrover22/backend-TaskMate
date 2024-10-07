@@ -171,10 +171,10 @@ exports.deleteBooking = async (req, res) => {
 // Get bookings for a specific customer
 exports.getCustomerBookings = async (req, res) => {
   try {
-    const bookings = await Booking.find({ cust_id: req.params.custId })
-      .populate("prof_id", "name email")
+    const bookings = await Booking.find({ cust_id: req.params.customerId })
+      .populate("prof_id", "profileImage firstName lastName email ")
       .populate("service_id", "name price")
-      .populate("addJobModel_id");
+      .populate("addJobModel_id", "date");
     if (!bookings)
       return res.status(404).json({ message: "Booking not found" });
     res.json(bookings);
@@ -188,7 +188,7 @@ exports.getProfessionalBookings = async (req, res) => {
     const bookings = await Booking.find({ prof_id: req.params.profId })
       .populate("cust_id", "name email")
       .populate("service_id", "name price")
-      .populate("addJobModel_id");
+      .populate("addJobModel_id", "date");
     if (!bookings)
       return res.status(404).json({ message: "Booking not found" });
     res.json(bookings);

@@ -59,16 +59,15 @@ const getJobsByProfessional = async (req, res) => {
 
     // Find jobs created by this professional and populate related fields
     const jobs = await AddJobModal.find({ professionalId: req.user._id })
-      .populate("categoryId")  // Populates the category details
-      .populate("service_id")  // Populates the service details
-      .populate("professionalId", "firstName lastName profileImage");  // Populates the professional's details
+      .populate("categoryId") // Populates the category details
+      .populate("service_id") // Populates the service details
+      .populate("professionalId", "firstName lastName profileImage"); // Populates the professional's details
 
     res.status(200).json(jobs);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 // Get professionals deatils by serviceId
 const getProfessionalsForServiceWithDetails = async (req, res) => {
@@ -101,11 +100,16 @@ const getProfessionalsForServiceWithDetails = async (req, res) => {
       city: job.city,
       description: job.description,
       chargesPerHour: job.chargesPerHour,
-      workingDate: job.date.toISOString().split("T")[0],
+      workingDate: job.date,
+      //workingDate: job.date.toISOString().split("T")[0],
       // We then use the slice(0, 5) method to extract only the first 5 characters of the time string, which corresponds to the hours and minutes in the format "HH:MM".
+      // workingTime: {
+      //   start: job.startTime.toTimeString().slice(0, 5),
+      //   end: job.endTime.toTimeString().slice(0, 5),
+      // },
       workingTime: {
-        start: job.startTime.toTimeString().slice(0, 5),
-        end: job.endTime.toTimeString().slice(0, 5),
+        start: job.startTime,
+        end: job.endTime,
       },
     }));
 

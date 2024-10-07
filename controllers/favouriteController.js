@@ -1,10 +1,19 @@
 const mongoose = require("mongoose");
 const Favourite = require("../schemas/Favourite");
 
-// Add a favourite
+// Add a favourite (with duplicate check)
 exports.addFavourite = async (req, res) => {
   try {
-    const { cust_id, prof_id, jobId } = req.body; // Add jobId to the body
+    const { cust_id, prof_id, jobId } = req.body;
+
+    // Check if this combination of cust_id, prof_id, and jobId already exists
+    const existingFavourite = await Favourite.findOne({ cust_id, prof_id, jobId });
+
+    if (existingFavourite) {
+      return res.status(400).json({ message: "This job is already in your favorites." });
+    }
+
+    // If no duplicate is found, create a new favorite
     const newFavourite = new Favourite({ cust_id, prof_id, jobId });
     const savedFavourite = await newFavourite.save();
     res.status(201).json(savedFavourite);

@@ -21,7 +21,7 @@ const bookingSchema = new mongoose.Schema({
   },
 
   appointmentDateTime: { type: Date, default: Date.now },
-  bookHr: { type: Number, required: true },
+  bookHr: { type: Number },
   addJobModel_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "AddJobModal",

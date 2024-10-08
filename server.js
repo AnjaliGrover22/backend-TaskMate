@@ -22,6 +22,7 @@ const aIHelpCenterRoutes = require("./routes/aIHelpCenterRoute");
 const helpByUsProfessionalRoutes = require("./routes/helpByUsProfessionalRoute");
 const helpByAIProfessionalRoutes = require("./routes/helpByAIProfessionalRoute");
 const contectUsRoutes = require("./routes/contectUsRoute");
+const blogsRoutes = require("./routes/blogsRoute");
 
 connectDB();
 
@@ -60,6 +61,7 @@ app.use("/aihelpcenter", aIHelpCenterRoutes); //Use the aihelpcenter routes
 app.use("/helpbyusprofessional", helpByUsProfessionalRoutes); //Use the helpbyusprofessional routes
 app.use("/helpbyaiprofessional", helpByAIProfessionalRoutes); //Use the helpByAIProfessional routes
 app.use("/contectus", contectUsRoutes); //Use the contectus routes
+app.use("/blogs", blogsRoutes); //Use blogs routes
 
 app.listen(port, () =>
   console.log(`Server running on http://localhost:${port}`.bgGreen.black)

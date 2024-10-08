@@ -249,10 +249,11 @@ exports.getProfessionalEarnings = async (req, res) => {
 };
 
 const formatTimeRange = (startTime, endTime) => {
-  if (!startTime || !endTime) return "N/A";
+  if (!startTime || !endTime) return "N/A"; // If any value is missing, return "N/A"
 
   const formatTime = (time) => {
     const date = new Date(time);
+    if (isNaN(date)) return "N/A"; // Check if the date is invalid
     return date
       .toLocaleString("en-US", {
         hour: "numeric",
@@ -265,7 +266,7 @@ const formatTimeRange = (startTime, endTime) => {
   const formattedStart = formatTime(startTime);
   const formattedEnd = formatTime(endTime);
 
-  return `${formattedStart} - ${formattedEnd}`;
+  return `${formattedStart} to ${formattedEnd}`;
 };
 
 //Get bookings cards for a specific customer
@@ -292,11 +293,10 @@ exports.getCustomerBookingscards = async (req, res) => {
         .status(404)
         .json({ message: "No bookings found for this customer" });
     }
-
     const formattedBookings = bookings.map((booking) => ({
       id: booking._id,
       profileImage: booking.prof_id?.profileImage || "N/A",
-      profId: booking.prof_id?._id || "N/A", // Ensure profId is mapped correctly
+      profId: booking.prof_id?._id || "N/A",
       professionalName: booking.prof_id
         ? `${booking.prof_id.firstName} ${booking.prof_id.lastName}`.trim()
         : "N/A",
@@ -304,13 +304,13 @@ exports.getCustomerBookingscards = async (req, res) => {
       appointmentDate: booking.appointmentDateTime
         ? new Date(booking.appointmentDateTime).toDateString()
         : "N/A",
-      schedule: formatTimeRange(booking.startTime, booking.endTime),
-      date: booking.addJobModel_id.date
+      startTime: booking.startTime || "N/A", // Add fallback if missing
+      endTime: booking.endTime || "N/A", // Add fallback if missing
+      date: booking.addJobModel_id?.date // Ensure date field is populated
         ? new Date(booking.addJobModel_id.date).toDateString()
         : "N/A",
-      bookingHours: booking.bookHr,
-      status: booking.status,
-      description: booking.description,
+      bookingHours: booking.bookHr || "N/A",
+      status: booking.status || "N/A",
     }));
 
     res.json(formattedBookings);

@@ -1,11 +1,24 @@
 // controllers/professionalController.js
+
 const mongoose = require("mongoose");
 const Professional = require("../schemas/Professional");
+const Feedback = require("../schemas/Feedback");
 const jwt = require("jsonwebtoken");
 const cloudinary = require("cloudinary").v2;
 
+// Helper function to create JWT token
 const createToken = (_id) => {
   return jwt.sign({ _id }, process.env.SECRET, { expiresIn: "1d" });
+};
+
+// Utility function to recalculate the average rating
+const recalculateAverageRating = async (profId) => {
+  const feedbacks = await Feedback.find({ prof_id: profId });
+  const totalRating = feedbacks.reduce((sum, feedback) => sum + feedback.rating, 0);
+  const averageRating = feedbacks.length > 0 ? totalRating / feedbacks.length : 0;
+
+  // Update the professional's average rating
+  await Professional.findByIdAndUpdate(profId, { averageRating: averageRating });
 };
 
 // Login Professional
@@ -36,7 +49,7 @@ const signUpProfessional = async (req, res) => {
     lastName,
     gender,
     email,
-    password, // Make sure password is correctly passed here
+    password,
     phoneNumber,
     address,
     aboutMe,
@@ -44,7 +57,7 @@ const signUpProfessional = async (req, res) => {
     jobProfile,
   } = req.body;
 
-  let profileImage = req.file?.path || ""; // Use Cloudinary uploaded image path or an empty string if no image
+  const profileImage = req.file?.path || ""; // Use Cloudinary uploaded image path or an empty string if no image
 
   try {
     const professional = await Professional.signup(
@@ -53,7 +66,7 @@ const signUpProfessional = async (req, res) => {
       lastName,
       gender,
       email,
-      password, // Make sure password is passed here
+      password,
       phoneNumber,
       address,
       aboutMe,
@@ -74,6 +87,7 @@ const signUpProfessional = async (req, res) => {
   }
 };
 
+// Get Professional by ID
 const getProfessionalById = async (req, res) => {
   const { id } = req.params;
 
@@ -85,8 +99,8 @@ const getProfessionalById = async (req, res) => {
     const professional = await Professional.findById(id)
       .populate("rating") // Populating ratings
       .populate({
-        path: "jobProfile.skill", // Populating skill
-        select: "name image", // Selecting only name and image fields from Service
+        path: "jobProfile.skill",
+        select: "name image",
       })
       .exec();
 
@@ -102,12 +116,11 @@ const getProfessionalById = async (req, res) => {
       );
       professional.averageRating = totalRating / professional.rating.length;
     } else {
-      professional.averageRating = 0; // Set default average rating
+      professional.averageRating = 0;
     }
 
     res.status(200).json(professional);
   } catch (error) {
-    console.error("Error fetching professional:", error); // Log error
     res.status(500).json({ error: error.message });
   }
 };
@@ -119,7 +132,7 @@ const getProfessionalsByService = async (req, res) => {
     if (!serviceId) {
       return res.status(400).json({ message: "Service ID is required" });
     }
-    console.log("Service ID:", req.params.serviceId);
+
     const professionals = await Professional.find({
       "jobProfile.skill": serviceId,
     })
@@ -127,11 +140,9 @@ const getProfessionalsByService = async (req, res) => {
       .populate("rating")
       .populate("jobProfile.skill")
       .exec();
-    console.log("professionals :", professionals);
+
     if (!professionals || professionals.length === 0) {
-      return res
-        .status(404)
-        .json({ error: "No professionals found for this service" });
+      return res.status(404).json({ error: "No professionals found for this service" });
     }
 
     // Calculate average rating for each professional
@@ -165,7 +176,7 @@ const getAllProfessionals = async (req, res) => {
       return res.status(404).json({ error: "No professionals found" });
     }
 
-    // Optionally, calculate average rating for each professional
+    // Calculate average rating for each professional
     professionals.forEach((professional) => {
       if (professional.rating.length > 0) {
         const totalRating = professional.rating.reduce(
@@ -208,6 +219,7 @@ const updateProfessional = async (req, res) => {
   }
 };
 
+// Upload Professional Image (using Cloudinary)
 const uploadProfessionalImage = async (req, res) => {
   try {
     const { id } = req.params;
@@ -215,29 +227,23 @@ const uploadProfessionalImage = async (req, res) => {
     // Ensure the professional exists before attempting to upload the image
     const professional = await Professional.findById(id);
     if (!professional) {
-      return res.status(404).json({ message: "professional not found" });
+      return res.status(404).json({ message: "Professional not found" });
     }
 
     // Check if the file was uploaded correctly by multer
     if (req.file && req.file.path) {
-      // Update only the image field, avoiding validation of other fields
       professional.profileImage = req.file.path;
-      await professional.save({ validateBeforeSave: false }); // Avoid validation for other fields like categoryId
+      await professional.save({ validateBeforeSave: false });
 
-      return res
-        .status(200)
-        .json({ message: "profileImage uploaded successfully", professional });
+      return res.status(200).json({
+        message: "Profile image uploaded successfully",
+        professional,
+      });
     } else {
-      console.log(req.file); // Add this log to see what req.file looks like
-      return res
-        .status(422)
-        .json({ message: "Invalid profileImage or no file uploaded" });
+      return res.status(422).json({ message: "Invalid profile image or no file uploaded" });
     }
   } catch (error) {
-    console.error("Error while uploading professional profileImage:", error); // Log the error to the console
-    return res
-      .status(500)
-      .json({ message: "Server error", error: error.message });
+    return res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 

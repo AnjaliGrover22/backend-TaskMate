@@ -14,11 +14,17 @@ const createToken = (_id) => {
 // Utility function to recalculate the average rating
 const recalculateAverageRating = async (profId) => {
   const feedbacks = await Feedback.find({ prof_id: profId });
-  const totalRating = feedbacks.reduce((sum, feedback) => sum + feedback.rating, 0);
-  const averageRating = feedbacks.length > 0 ? totalRating / feedbacks.length : 0;
+  const totalRating = feedbacks.reduce(
+    (sum, feedback) => sum + feedback.rating,
+    0
+  );
+  const averageRating =
+    feedbacks.length > 0 ? totalRating / feedbacks.length : 0;
 
   // Update the professional's average rating
-  await Professional.findByIdAndUpdate(profId, { averageRating: averageRating });
+  await Professional.findByIdAndUpdate(profId, {
+    averageRating: averageRating,
+  });
 };
 
 // Login Professional
@@ -98,6 +104,7 @@ const getProfessionalById = async (req, res) => {
   try {
     const professional = await Professional.findById(id)
       .populate("rating") // Populating ratings
+      .populate("averageRating")
       .populate({
         path: "jobProfile.skill",
         select: "name image",
@@ -142,7 +149,9 @@ const getProfessionalsByService = async (req, res) => {
       .exec();
 
     if (!professionals || professionals.length === 0) {
-      return res.status(404).json({ error: "No professionals found for this service" });
+      return res
+        .status(404)
+        .json({ error: "No professionals found for this service" });
     }
 
     // Calculate average rating for each professional
@@ -240,10 +249,14 @@ const uploadProfessionalImage = async (req, res) => {
         professional,
       });
     } else {
-      return res.status(422).json({ message: "Invalid profile image or no file uploaded" });
+      return res
+        .status(422)
+        .json({ message: "Invalid profile image or no file uploaded" });
     }
   } catch (error) {
-    return res.status(500).json({ message: "Server error", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
   }
 };
 

@@ -8,7 +8,6 @@ const {
   updateBooking,
   deleteBooking,
   getCustomerBookings,
-  getCustomerBookingscards,
   getProfessionalBookings,
   getProfessionalEarnings,
 } = require("../controllers/bookingController.js");
@@ -32,9 +31,6 @@ router.delete("/:id", deleteBooking);
 
 // Get bookings for a specific customer
 router.get("/customer/:customerId", getCustomerBookings);
-
-// Get bookings cards for a specific customer
-router.get("/customerbooking/:customerId", getCustomerBookingscards);
 
 // Get bookings for a specific professional
 router.get("/professional/:profId", getProfessionalBookings);

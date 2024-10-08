@@ -222,13 +222,12 @@ exports.getProfessionalEarnings = async (req, res) => {
       // Check if the related addJobModel exists and has a valid chargesPerHour field
       const chargesPerHour = booking.addJobModel_id?.chargesPerHour;
       if (chargesPerHour === undefined) {
-        console.warn(`Missing chargesPerHour for booking: ${booking._id}`);
+        // console.warn(`Missing chargesPerHour for booking: ${booking._id}`);
         return acc; // Skip this booking if chargesPerHour is missing
       }
 
       const earnings = chargesPerHour * booking.bookHr;
 
-      // Aggregate earnings by date
       if (acc[date]) {
         acc[date] += earnings;
       } else {
@@ -238,23 +237,11 @@ exports.getProfessionalEarnings = async (req, res) => {
       return acc;
     }, {});
 
-    // Convert the earningsByDate object to an array of objects for sorting
-    const earningsArray = Object.entries(earningsByDate).map(
-      ([date, earnings]) => ({
-        date,
-        earnings,
-      })
-    );
-
-    // Sort the earningsArray by date in ascending order
-    earningsArray.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-    if (earningsArray.length === 0) {
+    if (Object.keys(earningsByDate).length === 0) {
       return res.status(404).json({ message: "No earnings data available" });
     }
 
-    // Return the sorted array
-    res.json(earningsArray);
+    res.json(earningsByDate);
   } catch (error) {
     console.error("Error in getProfessionalEarnings:", error.message);
     res.status(500).json({ message: error.message });

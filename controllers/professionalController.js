@@ -92,6 +92,7 @@ const signUpProfessional = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+// get proffessional by id 
 
 const getProfessionalById = async (req, res) => {
   const { id } = req.params;
@@ -122,6 +123,7 @@ const getProfessionalById = async (req, res) => {
     res.status(200).json({
       ...professional.toObject(), // Convert mongoose document to plain JS object
       averageRating: averageRating, // Add the calculated average rating
+      paymentOption: professional.jobProfile.paymentOption,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
